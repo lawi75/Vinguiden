@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vinguiden</string>
+    <string name="app_by">by lawi75</string>
+    <string name="search_wine">Sök</string>
+    <string name="wine_list_name">Min vinlista</string>
+    <string name="add_wine_name">Lägg till vin</string>
+    <string name="systembolaget_no_hint">Systembolaget nr</string>
+    <string name="search">Sök</string>
+    <string name="skip">Hoppa över</string>
+    <string name="modify_wine_name">Ändra vin</string>    
+    <string name="name_hint">Namn</string>
+    <string name="country_hint">Land</string>
+    <string name="producer_hint">Producent</string>
+    <string name="usage_hint">Passar till</string>
+    <string name="taste_hint">Smak</string>
+    <string name="provider_hint">Leverantör</string>
+    <string name="save">Spara</string>
+    <string name="cancel">Avbryt</string>
+    <string name="ok">OK</string>
+    <string name="wine_name">Vin</string>
+    <string name="share_on_facebook">Dela</string>
+    <string name="rate">Betyg</string>
+    <string name="rating">Betygsätt</string>
+    <string name="change">Ändra</string>
+    <string name="recommend_wine">Jag har druckit ett vin som heter</string>
+    <string name="recommend_wine1">som jag ger betyg</string>
+    <string name="recommend_wine2">av 5</string>
+    <string name="about">Om</string>
+    <string name="aboutText"></string>
+    <string name="aboutIcons">Information som visas gällande viner kommer från www.systembolaget.se. Vinguiden har ingen relation till Systembolaget och Systembolaget har inget ansvar för någon information som visas på Vinguiden. All beställning, köp och utlämning sker från/av/hos Systembolaget.\n\n\nIkonerna som Vinguiden använder sig av kommer från:</string>
+    <string name="aboutOxygen">www.oxygen-icons.org</string>
+    <string name="aboutVisualpharm">www.visualpharm.com</string>
+    <string name="systembolaget">www.systembolaget.se</string>
+    <string name="year">Årgång</string>
+    <string name="strength">Alkoholhalt</string>
+</resources>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="ws.wiklund.vinguiden"
+      android:versionCode="2"
+      android:versionName="1.0.0">
+	<uses-sdk android:minSdkVersion="10" />
+	
+ 	<uses-permission
+        android:name="android.permission.INTERNET" />
+ 	<uses-permission 
+ 	    android:name="android.permission.ACCESS_NETWORK_STATE"/>
+        
+    <application 
+    	android:icon="@drawable/icon" 
+    	android:label="@string/app_name" 
+    	android:theme="@style/CustomTheme"
+    	android:debuggable="false">
+        <activity android:name="ws.wiklund.vinguiden.activities.WineListActivity"
+                  android:label="@string/wine_list_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>            
+        </activity>
+        
+        <activity android:name=".activities.AddWineActivity"
+        		  android:label="@string/add_wine_name" />
+
+        <activity android:name=".activities.ModifyWineActivity"
+        		  android:label="@string/modify_wine_name" />
+
+        <activity android:name=".activities.WineActivity"
+        		  android:label="@string/wine_name" />
+
+        <activity android:name=".activities.AboutActivity"
+        		  android:label="@string/app_name" />
+        
+        <activity android:name=".activities.FullAdActivity" />
+        
+        <activity android:name="com.google.ads.AdActivity"
+              android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
+        
+        </application>
+</manifest>
