@@ -154,6 +154,10 @@ public class WineActivity extends BaseActivity implements DialogListener {
 					builder.append(" ").append(getString(R.string.recommend_wine1)).append(" ");
 					String rating = DECIMAL_FORMAT.format(wine.getRating());
 
+					if(rating.endsWith(String.valueOf(DECIMAL_FORMAT.getDecimalFormatSymbols().getDecimalSeparator()))) {
+						rating = rating.substring(0, rating.length() - 1);
+					}
+					
 					builder.append(rating).append(" ").append(getString(R.string.recommend_wine2));
 				}
 				

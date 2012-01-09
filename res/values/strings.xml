@@ -34,4 +34,12 @@
     <string name="systembolaget">www.systembolaget.se</string>
     <string name="year">Årgång</string>
     <string name="strength">Alkoholhalt</string>
+    <string name="category">Kategori</string>
+    <string name="newStr">Ny...</string>
+    <string name="deleteTitle">Ta bort</string>
+    <string name="deleteWine">Vill du ta bort</string>
+    <string name="deleteFailed">Det gick inte att ta bort</string>
+    <string name="wait">Vänligen vänta...</string>
+    
+    
 </resources>

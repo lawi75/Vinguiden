@@ -5,10 +5,14 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.bolaget.WineType;
+import ws.wiklund.vinguiden.db.WineDatabaseHelper;
+import ws.wiklund.vinguiden.model.Category;
 import ws.wiklund.vinguiden.model.Country;
 import ws.wiklund.vinguiden.util.DownloadImageTask;
 import android.app.Activity;
@@ -26,6 +30,10 @@ public class BaseActivity extends Activity {
 	protected static List<String> strengths = new ArrayList<String>();
 	
 	protected static int lightVersion = 1; 
+
+	private static Set<Category> categories = new HashSet<Category>();
+
+	private WineDatabaseHelper helper;
 
 	static {
 		DECIMAL_FORMAT.setDecimalSeparatorAlwaysShown(true);
@@ -52,6 +60,8 @@ public class BaseActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
+    	
+    	helper = new WineDatabaseHelper(this);
     }
     
     protected void setText(TextView view, String value) {
@@ -67,5 +77,23 @@ public class BaseActivity extends Activity {
     protected void setCountryThumbFromUrl(Country country) {
 		new DownloadImageTask((ImageView) findViewById(R.id.Image_country_thumbUrl), 29, 17).execute(country != null ? country.getThumbUrl() : null);
 	}
+
+	protected synchronized Set<Category> getCategories() {
+		if(categories.isEmpty()) {
+			categories.add(new Category(""));
+			categories.add(new Category(Category.NEW_ID, getString(R.string.newStr)));
+		}
+		
+		categories.addAll(helper.getCategories());
+
+		//TODO possibility to remove categories
+		//TODO dialog if new is selected
+		
+		return categories;
+	}
+    
+    
+    
+    
 
 }

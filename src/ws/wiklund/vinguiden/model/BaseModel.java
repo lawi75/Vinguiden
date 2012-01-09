@@ -38,5 +38,10 @@ public class BaseModel implements Serializable {
 	public boolean isNew() {
 		return id == -1 && name != null;
 	}
+
+	@Override
+	public String toString() {
+		return "BaseModel [id=" + id + ", name=" + name + "]";
+	}
 	
 }

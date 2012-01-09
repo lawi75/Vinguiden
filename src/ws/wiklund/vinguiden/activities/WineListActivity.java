@@ -57,9 +57,9 @@ public class WineListActivity extends CustomListActivity {
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {				
 				ListView listView = WineListActivity.this.getListView();
 				final Cursor c = (Cursor) listView.getItemAtPosition(position);
-				
+
 				AlertDialog.Builder alertDialog = new AlertDialog.Builder(WineListActivity.this);
-				alertDialog.setMessage("Vill du ta bort " + c.getString(1) + "?");
+				alertDialog.setMessage(getString(R.string.deleteWine) + " " + c.getString(1) + "?");
 				alertDialog.setCancelable(false);
 				alertDialog.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 					@Override
@@ -67,7 +67,7 @@ public class WineListActivity extends CustomListActivity {
 						boolean b = helper.deleteWine(c.getInt(0));
 
 						if (!b) {
-							Toast.makeText(WineListActivity.this, "Det gick inte att ta bort " + c.getString(1), Toast.LENGTH_LONG).show();
+							Toast.makeText(WineListActivity.this, getString(R.string.deleteFailed)  + " " + c.getString(1), Toast.LENGTH_LONG).show();
 						} else {
 							cursor.requery();
 							notifyDataSetChanged();
@@ -86,7 +86,7 @@ public class WineListActivity extends CustomListActivity {
 				AlertDialog alert = alertDialog.create();
 				
 				// Title for AlertDialog
-				alert.setTitle("Ta bort " + c.getString(1) + "?");
+				alert.setTitle(getString(R.string.deleteTitle) + " " + c.getString(1) + "?");
 				// Icon for AlertDialog
 				alert.setIcon(R.drawable.icon);
 				alert.show();				
@@ -194,7 +194,7 @@ public class WineListActivity extends CustomListActivity {
 		@Override
 		protected void onPreExecute() {
 			dialog = new ProgressDialog(WineListActivity.this);
-			dialog.setMessage("Vänligen vänta...");
+			dialog.setMessage(getString(R.string.wait));
 			dialog.setIndeterminate(true);
 			dialog.setCancelable(false);
 			dialog.show();
@@ -202,7 +202,6 @@ public class WineListActivity extends CustomListActivity {
 			super.onPreExecute();
 		}
 		
-	}
-    
+	}    
 
 }

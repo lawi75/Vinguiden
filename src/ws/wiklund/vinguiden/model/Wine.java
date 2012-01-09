@@ -20,8 +20,8 @@ public class Wine extends BaseModel {
 	private Provider provider;
 	private float rating = -1;
 	private Date added;
-
 	private String comment;
+	private Category category;
 	
 	public Wine() {
 		this(null);
@@ -37,7 +37,7 @@ public class Wine extends BaseModel {
 
 	public Wine(int id, String name, int no, WineType type, String thumb,
 			Country country, int year, Producer producer, double strength,
-			String usage, String taste, Provider provider, float rating, String comment, Date added) {
+			String usage, String taste, Provider provider, float rating, String comment, Category category, Date added) {
 		this(id, name);
 		
 		this.no = no;
@@ -52,6 +52,7 @@ public class Wine extends BaseModel {
 		this.provider = provider;
 		this.rating = rating;
 		this.comment = comment;
+		this.category = category;
 		this.added = added;
 	}
 
@@ -159,17 +160,23 @@ public class Wine extends BaseModel {
 		this.added = added;
 	}
 
+	public Category getCategory() {
+		return category;
+	}
+	
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
 	@Override
 	public String toString() {
 		return "Wine [no=" + no + ", type=" + type + ", thumb=" + thumb
 				+ ", country=" + country + ", year=" + year + ", producer="
 				+ producer + ", strength=" + strength + ", usage=" + usage
 				+ ", taste=" + taste + ", provider=" + provider + ", rating="
-				+ rating + ", added=" + added + ", comment=" + comment
-				+ ", getId()=" + getId() + ", getName()=" + getName()
+				+ rating + ", added=" + added + ", comment=" + comment + ", category="
+				+ category + ", getId()=" + getId() + ", getName()=" + getName()
 				+ ", isNew()=" + isNew();
 	}
-	
-	
 
 }

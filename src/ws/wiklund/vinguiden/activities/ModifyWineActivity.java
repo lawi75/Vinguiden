@@ -2,11 +2,13 @@ package ws.wiklund.vinguiden.activities;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.bolaget.WineType;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
+import ws.wiklund.vinguiden.model.Category;
 import ws.wiklund.vinguiden.model.Country;
 import ws.wiklund.vinguiden.model.Producer;
 import ws.wiklund.vinguiden.model.Provider;
@@ -109,6 +111,9 @@ public class ModifyWineActivity extends BaseActivity {
 		EditText taste = (EditText) findViewById(R.id.Edit_taste);
 		setText(taste, wine.getTaste());
 		
+		Spinner category = (Spinner) findViewById(R.id.Spinner_category);
+		populateAndSetCategorySpinner(category, wine.getCategory());
+
 		Provider p1 = wine.getProvider();
 		if (p1 != null) {
 			EditText provider = (EditText) findViewById(R.id.Edit_provider);
@@ -119,8 +124,15 @@ public class ModifyWineActivity extends BaseActivity {
 		added.setText(DATE_FORMAT.format((wine.getAdded() != null ? wine.getAdded() : new Date())));
 	}
 
+	private void populateAndSetCategorySpinner(Spinner categorySpinner, Category category) {
+		ArrayAdapter<Category> adapter = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<Category>(getCategories()));
+		categorySpinner.setAdapter(adapter);
+		
+		categorySpinner.setSelection(adapter.getPosition(category));
+	}
+
 	private void populateAndSetStrengthSpinner(Spinner strengthSpinner, double strength) {
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, strengths);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, strengths);
 		strengthSpinner.setAdapter(adapter);
 		
 		strengthSpinner.setSelection(adapter.getPosition(DECIMAL_FORMAT.format(strength) + " %"));

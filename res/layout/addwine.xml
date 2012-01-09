@@ -15,6 +15,7 @@
 		ads:adUnitId="a14ef3028f69666"
 		ads:adSize="BANNER"
 		ads:loadAdOnCreate="true"
+		ads:testDevices = "TEST_EMULATOR"
 		android:layout_span="2" />			 	    		    
 	    	    
 	</TableRow>

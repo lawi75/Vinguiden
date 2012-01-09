@@ -3,9 +3,11 @@ package ws.wiklund.vinguiden.db;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Date;
+import java.util.List;
 
 import ws.wiklund.vinguiden.bolaget.WineType;
 import ws.wiklund.vinguiden.model.BaseModel;
+import ws.wiklund.vinguiden.model.Category;
 import ws.wiklund.vinguiden.model.Column;
 import ws.wiklund.vinguiden.model.Country;
 import ws.wiklund.vinguiden.model.Producer;
@@ -21,13 +23,14 @@ import android.util.Log;
 
 public class WineDatabaseHelper extends SQLiteOpenHelper {
 	public static final String DATABASE_NAME = "wineguide.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 
 	// Database tables
 	private static final String COUNTRY_TABLE = "country";
 	private static final String PRODUCER_TABLE = "producer"; 
 	private static final String PROVIDER_TABLE = "provider";
 	private static final String WINE_TABLE = "wine";
+	private static final String CATEGORY_TABLE = "category";
 	
 	// Database creation sql statements
 	private static final String DB_CREATE_WINE = "create table " + WINE_TABLE + " (_id integer primary key autoincrement, "
@@ -44,10 +47,12 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 			+ "provider_id integer, "
 			+ "rating float, "
 			+ "comment text, "
+			+ "category_id integer, "
 			+ "added timestamp not null default current_timestamp, "
 			+ "foreign key (country_id) references country (_id), "
 			+ "foreign key (producer_id) references producer (_id), "
-			+ "foreign key (provider_id) references provider (_id));";
+			+ "foreign key (producer_id) references producer (_id), "
+			+ "foreign key (category_id) references category (_id));";
 
 	private static final String DB_CREATE_COUNTRY = "create table " + COUNTRY_TABLE + " (_id integer primary key autoincrement, "
 			+ "name text not null, " 
@@ -57,6 +62,9 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 			+ "name text not null);";
 
 	private static final String DB_CREATE_PROVIDER = "create table " + PROVIDER_TABLE + " (_id integer primary key autoincrement, "
+			+ "name text not null);";
+
+	static final String DB_CREATE_CATEGORY = "create table " + CATEGORY_TABLE + " (_id integer primary key autoincrement, "
 			+ "name text not null);";
 
 	private static final String WINE_COLUMNS = 
@@ -78,6 +86,8 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 			+ "provider.name, "
 			+ "wine.rating, "
 			+ "wine.comment, "			
+			+ "wine.category_id, "
+			+ "category.name, "
 			+ "(strftime('%s', added) * 1000) AS added "
 		+ "FROM "
 			+ WINE_TABLE + " ";
@@ -86,6 +96,8 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 			+ "wine.country_id = country._id "
 			+ "JOIN producer ON "
 			+ "wine.producer_id = producer._id "
+			+ "JOIN category ON "
+			+ "wine.category_id = category._id "
 			+ "JOIN provider ON "
 			+ "wine.provider_id = provider._id ";
 
@@ -112,17 +124,21 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL(DB_CREATE_PRODUCER);
 		db.execSQL(DB_CREATE_PROVIDER);
 		db.execSQL(DB_CREATE_COUNTRY);
+		db.execSQL(DB_CREATE_CATEGORY);
 		db.execSQL(DB_CREATE_WINE);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion,
 			int newVersion) {
-		Log.w(WineDatabaseHelper.class.getName(),
-				"Upgrading database from version " + oldVersion + " to "
-						+ newVersion + ", which will destroy all old data");
-
-		throw new IllegalArgumentException("Not yet implemented");
+		
+		if (oldVersion != newVersion) {
+			Log.d(WineDatabaseHelper.class.getName(),
+					"Upgrading database from version " + oldVersion + " to "
+							+ newVersion);
+			
+			new DatabaseUpgrader().doUpdate(this, oldVersion, newVersion);
+		}
 	}
 
 	public Wine getWine(int id) {
@@ -172,6 +188,12 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 			db.close();
 		}
 	}
+	
+	public List<Category> getCategories() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 
 	public boolean deleteWine(int id) {
 		SQLiteDatabase db = getWritableDatabase();
@@ -256,6 +278,12 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 					values.put("provider_id", addProvider(db, wine.getProvider()));
 				}
 				
+				//Add category if category doesn't exists in DB
+				Integer categoryId = values.getAsInteger("category_id");
+				if (categoryId == null) {
+					values.put("category_id", addCategory(db, wine.getCategory()));
+				}
+
 				long id = db.insert(WINE_TABLE, null, values);
 				
 				//Update wine with the newly created id
@@ -286,7 +314,8 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 				new Provider(c.getInt(14), c.getString(15)),
 				c.getFloat(16),
 				c.getString(17),
-				new Date(c.getLong(18)));
+				new Category(c.getInt(18), c.getString(19)),
+				new Date(c.getLong(20)));
 	}
 	
 	private Country getCountryFromCursor(Cursor c) {
@@ -306,6 +335,10 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 		return addModel(db, provider);
 	}
 
+	private int addCategory(SQLiteDatabase db, Category category) {
+		return addModel(db, category);
+	}
+	
 	private int addModel(SQLiteDatabase db, BaseModel model) {
 		int id = -1;
 		if(model != null) {
@@ -412,6 +445,11 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 			values.put("provider_id", provider.getId());  
 		}
 		
+		Category category = wine.getCategory();
+		if(category != null && !category.isNew()) {
+			values.put("category_id", category.getId());  
+		}
+
 		values.put("name", wine.getName());  
 		values.put("no", wine.getNo());  
 		values.put("thumb", wine.getThumb());
