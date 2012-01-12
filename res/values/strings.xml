@@ -40,6 +40,16 @@
     <string name="deleteWine">Vill du ta bort</string>
     <string name="deleteFailed">Det gick inte att ta bort</string>
     <string name="wait">Vänligen vänta...</string>
-    
-    
+    <string name="sort_list">Sortera/Filtrera listen</string>
+
+    <string name="sortOnName">Namn</string>
+    <string name="sortOnRank">Betyg</string>
+    <string name="sortOnType">Vinsort</string>
+    <string name="sortOnCategory">Kategori</string>
+        
+    <string name="sortOnNameSub">Sortera på namn fallande</string>
+    <string name="sortOnRankSub">Sortera på Betyg fallande</string>
+    <string name="sortOnTypeSub">Filtrera på vinsort</string>
+    <string name="sortOnCategorySub">Filtrera på Kategori</string>
+    	    
 </resources>

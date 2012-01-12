@@ -39,7 +39,8 @@
 	        android:layout_marginTop="5dip"
 	        android:layout_marginLeft="10dip"
 	        android:layout_marginRight="10dip"
-			android:background="@drawable/next"
+			android:src="@drawable/next"
+			android:background="@drawable/custom_button2"			
 			android:onClick="searchWine" />
 	</TableRow>
 </TableLayout>	    	

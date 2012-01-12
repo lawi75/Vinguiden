@@ -200,8 +200,9 @@
 		<TableRow
 		    android:layout_height="wrap_content"
 			android:layout_width="wrap_content" >					
-			<TextView 
-				android:layout_height="wrap_content"
+			<TextView
+			    android:id="@+id/Text_category"
+			    android:layout_height="wrap_content"
 				android:layout_width="wrap_content"	
 				android:singleLine="true" 
 				android:text="@string/category" />			 

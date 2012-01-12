@@ -4,6 +4,7 @@ import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
 import ws.wiklund.vinguiden.list.WineListCursorAdapter;
 import ws.wiklund.vinguiden.model.Wine;
+import ws.wiklund.vinguiden.util.Sortable;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -27,11 +28,13 @@ public class WineListActivity extends CustomListActivity {
 	private SQLiteDatabase db;
 	private Cursor cursor;
 	private SimpleCursorAdapter adapter;
-
+	
+	private String currentSortColumn = "wine.name asc";
+	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);        
         setContentView(R.layout.winelist);
         
         if(Integer.valueOf(getString(R.string.version)) != BaseActivity.lightVersion) {
@@ -41,8 +44,8 @@ public class WineListActivity extends CustomListActivity {
         
         helper = new WineDatabaseHelper(this);
         
-        cursor = getNewCursor();
-        
+        cursor = getNewCursor(currentSortColumn);
+
         startManagingCursor(cursor);
 
         // Now create a new list adapter bound to the cursor.
@@ -97,16 +100,15 @@ public class WineListActivity extends CustomListActivity {
 			}
 		});
 	}
-
-	private Cursor getNewCursor() {
+    
+	private Cursor getNewCursor(String sortColumn) {
         db = helper.getReadableDatabase();        
-        return db.rawQuery(WineDatabaseHelper.SQL_SELECT_ALL_WINES + " ORDER BY wine.name asc", null);
+        return db.rawQuery(WineDatabaseHelper.SQL_SELECT_ALL_WINES + " ORDER BY " + sortColumn, null);
 	}
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-
 		new GetWineFromCursorTask().execute(position);		
 	}
 	
@@ -118,7 +120,7 @@ public class WineListActivity extends CustomListActivity {
 
 	private void notifyDataSetChanged() {
 		if(adapter.getCount() == 0) {
-			cursor = getNewCursor();
+			cursor = getNewCursor(currentSortColumn);
 			adapter.changeCursor(cursor);
 		}
 		
@@ -143,6 +145,13 @@ public class WineListActivity extends CustomListActivity {
 	}
 	
 	@Override
+	protected void onRestart() {
+		notifyDataSetChanged();
+		super.onRestart();
+	}
+
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		
@@ -165,6 +174,16 @@ public class WineListActivity extends CustomListActivity {
 		return false;
 	}	
 
+	@Override
+	void sort(Sortable sortable) {
+		currentSortColumn = sortable.getSortColumn();
+
+		cursor = getNewCursor(currentSortColumn);
+		adapter.changeCursor(cursor);
+		
+		adapter.notifyDataSetChanged();
+	}
+	
 
 	private class GetWineFromCursorTask extends AsyncTask<Integer, Void, Wine> {
 		private ProgressDialog dialog;
@@ -202,6 +221,6 @@ public class WineListActivity extends CustomListActivity {
 			super.onPreExecute();
 		}
 		
-	}    
+	}
 
 }

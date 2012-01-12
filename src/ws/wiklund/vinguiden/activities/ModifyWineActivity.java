@@ -33,7 +33,7 @@ public class ModifyWineActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.modifywine);
 
-        if(Integer.valueOf(getString(R.string.version)) != BaseActivity.lightVersion) {
+        if(!isLightVersion()) {
     		findViewById(R.id.adView).setVisibility(View.GONE);
         	findViewById(R.id.adView1).setVisibility(View.GONE);        	
         }
@@ -112,7 +112,14 @@ public class ModifyWineActivity extends BaseActivity {
 		setText(taste, wine.getTaste());
 		
 		Spinner category = (Spinner) findViewById(R.id.Spinner_category);
-		populateAndSetCategorySpinner(category, wine.getCategory());
+		if(!isLightVersion()) {
+			populateAndSetCategorySpinner(category, wine.getCategory());
+		} else {
+			TextView tv = (TextView) findViewById(R.id.Text_category);
+			
+			tv.setVisibility(View.GONE); 
+			category.setVisibility(View.GONE); 
+		}
 
 		Provider p1 = wine.getProvider();
 		if (p1 != null) {

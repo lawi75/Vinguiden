@@ -229,6 +229,18 @@ public class WineActivity extends BaseActivity implements DialogListener {
 			setText(provider, p1.getName());
 		}
 
+		TextView tv = (TextView) findViewById(R.id.Text_category);
+
+		if(!isLightVersion()) {
+			setText(tv, wine.getCategory().getName());
+		} else {
+			TextView lbl = (TextView) findViewById(R.id.Text_category_lbl);
+			
+			lbl.setVisibility(View.GONE); 
+			tv.setVisibility(View.GONE); 
+		}
+
+		
 		RatingBar rating = (RatingBar) findViewById(R.id.ratingBar);
 		rating.setRating(wine.getRating());
 

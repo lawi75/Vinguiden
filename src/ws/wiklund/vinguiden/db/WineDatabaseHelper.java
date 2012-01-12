@@ -23,17 +23,18 @@ import android.util.Log;
 
 public class WineDatabaseHelper extends SQLiteOpenHelper {
 	public static final String DATABASE_NAME = "wineguide.db";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 5;
 
 	// Database tables
 	private static final String COUNTRY_TABLE = "country";
 	private static final String PRODUCER_TABLE = "producer"; 
 	private static final String PROVIDER_TABLE = "provider";
-	private static final String WINE_TABLE = "wine";
 	private static final String CATEGORY_TABLE = "category";
 	
+	static final String WINE_TABLE = "wine";
+
 	// Database creation sql statements
-	private static final String DB_CREATE_WINE = "create table " + WINE_TABLE + " (_id integer primary key autoincrement, "
+	static final String DB_CREATE_WINE = "create table " + WINE_TABLE + " (_id integer primary key autoincrement, "
 			+ "name text not null, "
 			+ "no integer, "
 			+ "thumb text, "
@@ -92,13 +93,13 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 		+ "FROM "
 			+ WINE_TABLE + " ";
 
-	private static final String WINE_JOIN_COLUMNS = "JOIN country ON "
+	private static final String WINE_JOIN_COLUMNS = "LEFT JOIN country ON "
 			+ "wine.country_id = country._id "
-			+ "JOIN producer ON "
+			+ "LEFT JOIN producer ON "
 			+ "wine.producer_id = producer._id "
-			+ "JOIN category ON "
+			+ "LEFT JOIN category ON "
 			+ "wine.category_id = category._id "
-			+ "JOIN provider ON "
+			+ "LEFT JOIN provider ON "
 			+ "wine.provider_id = provider._id ";
 
 	public static final String SQL_SELECT_ALL_WINES = "SELECT "
@@ -132,12 +133,12 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion,
 			int newVersion) {
 		
-		if (oldVersion != newVersion) {
+		if (oldVersion < newVersion) {
 			Log.d(WineDatabaseHelper.class.getName(),
 					"Upgrading database from version " + oldVersion + " to "
 							+ newVersion);
 			
-			new DatabaseUpgrader().doUpdate(this, oldVersion, newVersion);
+			new DatabaseUpgrader().doUpdate(db, oldVersion, newVersion);
 		}
 	}
 

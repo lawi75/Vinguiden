@@ -106,8 +106,6 @@ public class AddWineActivity extends BaseActivity {
 
 		@Override
 		protected void onPostExecute(Wine wine) {
-			dialog.hide();
-
 			Intent intent = new Intent(AddWineActivity.this.getApplicationContext(), ModifyWineActivity.class);
 
 			if (wine != null) {
@@ -118,6 +116,8 @@ public class AddWineActivity extends BaseActivity {
 				errorMsg = null;
 			}
 			
+			dialog.hide();
+
 			super.onPostExecute(wine);
 		}
 

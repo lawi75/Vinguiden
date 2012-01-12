@@ -9,6 +9,7 @@ import java.util.Set;
 
 import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.bolaget.SystembolagetParser;
+import ws.wiklund.vinguiden.bolaget.WineType;
 import ws.wiklund.vinguiden.util.BitmapManager;
 import android.content.Context;
 import android.database.Cursor;
@@ -46,6 +47,7 @@ public class WineListCursorAdapter extends SimpleCursorAdapter implements Sectio
 			
 			 TextView titleView = (TextView) convertView.findViewById(R.id.itemTitle);  
 	         TextView textView = (TextView) convertView.findViewById(R.id.itemText);  
+	         TextView typeView = (TextView) convertView.findViewById(R.id.itemType);  
 	         ImageView imageView = (ImageView) convertView.findViewById(R.id.itemImage);
 	         RatingBar rating = (RatingBar) convertView.findViewById(R.id.itemRatingBar);
 
@@ -55,6 +57,7 @@ public class WineListCursorAdapter extends SimpleCursorAdapter implements Sectio
 	         holder.textView = textView;  
 	         holder.imageView = imageView;
 	         holder.rating = rating;
+	         holder.typeView = typeView;
 	         
 	         convertView.setTag(holder);
 		} else {
@@ -67,6 +70,7 @@ public class WineListCursorAdapter extends SimpleCursorAdapter implements Sectio
 			String name = c.getString(1);
 			
 			holder.titleView.setText(name);
+			holder.typeView.setText(WineType.fromId(c.getInt(3)).toString());
 			
 			int year = c.getInt(8); 
 			holder.textView.setText(c.getString(6) + " " + (year != -1 ? year : ""));
@@ -96,7 +100,8 @@ public class WineListCursorAdapter extends SimpleCursorAdapter implements Sectio
         public RatingBar rating;
 		public ImageView imageView;  
         public TextView titleView;  
-        public TextView textView;  
+        public TextView textView; 
+        public TextView typeView;
     }
 
 	@Override

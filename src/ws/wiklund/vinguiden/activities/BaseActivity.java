@@ -78,14 +78,22 @@ public class BaseActivity extends Activity {
 		new DownloadImageTask((ImageView) findViewById(R.id.Image_country_thumbUrl), 29, 17).execute(country != null ? country.getThumbUrl() : null);
 	}
 
+    protected boolean isLightVersion() {
+    	return Integer.valueOf(getString(R.string.version)) == lightVersion;
+    }
+    
 	protected synchronized Set<Category> getCategories() {
 		if(categories.isEmpty()) {
 			categories.add(new Category(""));
 			categories.add(new Category(Category.NEW_ID, getString(R.string.newStr)));
 		}
 		
-		categories.addAll(helper.getCategories());
-
+		List<Category> c = helper.getCategories();
+		
+		if (c != null && !c.isEmpty()) {
+			categories.addAll(c);
+		}
+		
 		//TODO possibility to remove categories
 		//TODO dialog if new is selected
 		
