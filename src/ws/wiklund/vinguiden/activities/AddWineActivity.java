@@ -24,13 +24,15 @@ public class AddWineActivity extends BaseActivity {
 	private WineDatabaseHelper helper;
 	private EditText searchStr;
 	
+	private ProgressDialog dialog;
+	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.addwine);
         
-        if(Integer.valueOf(getString(R.string.version)) != BaseActivity.lightVersion) {
+        if(!isLightVersion()) {
     		findViewById(R.id.adView).setVisibility(View.GONE);
         }
 
@@ -50,7 +52,16 @@ public class AddWineActivity extends BaseActivity {
         
     }
     
-    public void searchWine(View view) {    	
+    @Override
+	protected void onPause() {
+    	if(dialog != null && dialog.isShowing()) {
+    		dialog.dismiss();
+    	}
+    	
+		super.onPause();
+	}
+
+	public void searchWine(View view) {    	
 		search(searchStr.getText().toString());
     }
     
@@ -59,7 +70,6 @@ public class AddWineActivity extends BaseActivity {
     		new DownloadWineTask().execute(no);
     	}
     }
-
 	
 	private boolean isValidNo(String no) {
 		if(no != null && no.length() > 0 && Pattern.matches("^\\d*$", no)) {
@@ -81,7 +91,6 @@ public class AddWineActivity extends BaseActivity {
 
 
 	private class DownloadWineTask extends AsyncTask<String, Void, Wine> {
-		private ProgressDialog dialog;
 		private String no;
 		
 		private String errorMsg;
@@ -114,10 +123,9 @@ public class AddWineActivity extends BaseActivity {
 			} else {
 				Toast.makeText(getApplicationContext(), errorMsg == null ? "Nummer " + this.no + " finns inte hos Systembolaget" : errorMsg, Toast.LENGTH_SHORT).show();
 				errorMsg = null;
+				dialog.dismiss();
 			}
 			
-			dialog.hide();
-
 			super.onPostExecute(wine);
 		}
 

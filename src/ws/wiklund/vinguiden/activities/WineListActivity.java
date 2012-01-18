@@ -72,7 +72,6 @@ public class WineListActivity extends CustomListActivity {
 						if (!b) {
 							Toast.makeText(WineListActivity.this, getString(R.string.deleteFailed)  + " " + c.getString(1), Toast.LENGTH_LONG).show();
 						} else {
-							cursor.requery();
 							notifyDataSetChanged();
 						}
 					}
@@ -119,8 +118,11 @@ public class WineListActivity extends CustomListActivity {
 	}
 
 	private void notifyDataSetChanged() {
-		if(adapter.getCount() == 0) {
+		if(!db.isOpen() || adapter.getCount() == 0) {
+			stopManagingCursor(cursor);
 			cursor = getNewCursor(currentSortColumn);
+			
+			startManagingCursor(cursor);
 			adapter.changeCursor(cursor);
 		}
 		
@@ -144,12 +146,25 @@ public class WineListActivity extends CustomListActivity {
 		super.onDestroy();
 	}
 	
+	
+	
+	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+	}
+
 	@Override
 	protected void onRestart() {
 		notifyDataSetChanged();
 		super.onRestart();
 	}
-
+	
+	@Override
+	protected void onResume() {
+		notifyDataSetChanged();
+		super.onResume();
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

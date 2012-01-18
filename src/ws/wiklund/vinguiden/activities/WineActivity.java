@@ -41,7 +41,7 @@ public class WineActivity extends BaseActivity implements DialogListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.wine);
 
-        if(Integer.valueOf(getString(R.string.version)) != BaseActivity.lightVersion) {
+        if(!isLightVersion()) {
     		findViewById(R.id.adView).setVisibility(View.GONE);
         }
 
@@ -151,16 +151,9 @@ public class WineActivity extends BaseActivity implements DialogListener {
 				}
 				
 				if(wine.getRating() != -1) {
-					builder.append(" ").append(getString(R.string.recommend_wine1)).append(" ");
-					String rating = DECIMAL_FORMAT.format(wine.getRating());
-
-					if(rating.endsWith(String.valueOf(DECIMAL_FORMAT.getDecimalFormatSymbols().getDecimalSeparator()))) {
-						rating = rating.substring(0, rating.length() - 1);
-					}
-					
-					builder.append(rating).append(" ").append(getString(R.string.recommend_wine2));
+					builder.append(" ").append(getString(R.string.recommend_wine1)).append(" ");					
+					builder.append(getDecimalStringFromNumber(wine.getRating())).append(" ").append(getString(R.string.recommend_wine2));
 				}
-				
 				
 				parameters.putString("description", builder.toString());
 
@@ -246,7 +239,7 @@ public class WineActivity extends BaseActivity implements DialogListener {
 
 		TextView added = (TextView) findViewById(R.id.Text_added);
 		
-		added.setText(DATE_FORMAT.format((wine.getAdded() != null ? wine.getAdded() : new Date())));
+		added.setText(getDataAsString((wine.getAdded() != null ? wine.getAdded() : new Date())));
 	}
 
 }

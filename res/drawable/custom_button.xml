@@ -7,7 +7,7 @@
     </item>
 
     <item android:state_focused="true" >
-        <color android:color="#ff3333"/>
+        <color android:color="#323331"/>
     </item>
 
     <item>        

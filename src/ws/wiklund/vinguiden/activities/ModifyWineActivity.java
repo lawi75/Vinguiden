@@ -1,7 +1,5 @@
 package ws.wiklund.vinguiden.activities;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -128,7 +126,7 @@ public class ModifyWineActivity extends BaseActivity {
 		}
 		
 		TextView added = (TextView) findViewById(R.id.Text_added);
-		added.setText(DATE_FORMAT.format((wine.getAdded() != null ? wine.getAdded() : new Date())));
+		added.setText(getDataAsString((wine.getAdded() != null ? wine.getAdded() : new Date())));
 	}
 
 	private void populateAndSetCategorySpinner(Spinner categorySpinner, Category category) {
@@ -139,31 +137,31 @@ public class ModifyWineActivity extends BaseActivity {
 	}
 
 	private void populateAndSetStrengthSpinner(Spinner strengthSpinner, double strength) {
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, strengths);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, getStrengths());
 		strengthSpinner.setAdapter(adapter);
 		
-		strengthSpinner.setSelection(adapter.getPosition(DECIMAL_FORMAT.format(strength) + " %"));
+		strengthSpinner.setSelection(adapter.getPosition(getDecimalStringFromNumber(strength) + " %"));
 	}
 
 	private void populateAndSetTypeSpinner(Spinner typeSpinner, WineType type) {
-		ArrayAdapter<WineType> adapter = new ArrayAdapter<WineType>(this, android.R.layout.simple_spinner_dropdown_item, types);
+		ArrayAdapter<WineType> adapter = new ArrayAdapter<WineType>(this, android.R.layout.simple_spinner_dropdown_item, getTypes());
 		typeSpinner.setAdapter(adapter);
 
 		typeSpinner.setSelection(adapter.getPosition(type));
 	}
 
 	private void populateAndSetYearSpinner(Spinner yearSpinner, int year) {
-		ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_dropdown_item, years);
+		ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_dropdown_item, getYears());
 		yearSpinner.setAdapter(adapter);
 		
-		if(year >= 1900 && year <= currentYear) {
+		if(year >= 1900 && year <= getCurrentYear()) {
 			yearSpinner.setSelection(adapter.getPosition(year));
 		}
 	}
 
 	private void showWineList() {
 		Intent intent;
-        if(Integer.valueOf(getString(R.string.version)) != BaseActivity.lightVersion) {
+        if(!isLightVersion()) {
     		intent = new Intent(getApplicationContext(), WineListActivity.class);
         } else {
         	intent = new Intent(getApplicationContext(), FullAdActivity.class);
@@ -201,12 +199,7 @@ public class ModifyWineActivity extends BaseActivity {
 		
 		wine.setYear(year);
 		
-		try {
-			BigDecimal bd = (BigDecimal) DECIMAL_FORMAT.parse(strength);
-			wine.setStrength(bd.doubleValue());
-		} catch (ParseException e) {
-			Log.d(ModifyWineActivity.class.getName(), "Failed to parse strength(" + strength + ")", e);
-		}
+		wine.setStrength(getDoubleFromDecimalString(strength));
 		
 		wine.setUsage(usage);
 		wine.setTaste(taste);
