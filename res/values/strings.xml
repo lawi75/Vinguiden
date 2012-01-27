@@ -51,5 +51,15 @@
     <string name="sortOnRankSub">Sortera på Betyg fallande</string>
     <string name="sortOnTypeSub">Filtrera på vinsort</string>
     <string name="sortOnCategorySub">Filtrera på Kategori</string>
-    	    
+    <string name="donateTitle">Tack!</string>
+    <string name="donate">Tack för att du vill hjälpa till att förbättra Vinguiden, välj belopp (SEK) och klicka på donera</string>
+    <string name="sek">SEK</string>
+
+    <string name="dialog_set_number">Donera</string>
+    <string name="dialog_cancel">Avbryt</string>
+    
+    <string name="wineExist">Du har redan lagt till vin med nummer</string>
+    <string name="provideNo">Du måste ange ett nummer</string>
+    <string name="pleaseRetry">Vänligen prova igen om några sekunder!</string>
+    
 </resources>

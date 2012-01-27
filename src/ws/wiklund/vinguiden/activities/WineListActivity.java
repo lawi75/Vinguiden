@@ -4,6 +4,7 @@ import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
 import ws.wiklund.vinguiden.list.WineListCursorAdapter;
 import ws.wiklund.vinguiden.model.Wine;
+import ws.wiklund.vinguiden.util.PayPalFactory;
 import ws.wiklund.vinguiden.util.Sortable;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -37,6 +38,9 @@ public class WineListActivity extends CustomListActivity {
         super.onCreate(savedInstanceState);        
         setContentView(R.layout.winelist);
         
+    	//Bootstrapping
+    	PayPalFactory.init(this.getBaseContext());
+
         if(Integer.valueOf(getString(R.string.version)) != BaseActivity.lightVersion) {
         	findViewById(R.id.adView).setVisibility(View.GONE);
         	findViewById(R.id.adView1).setVisibility(View.GONE);        	

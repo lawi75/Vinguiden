@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 
-public class FullAdActivity extends BaseActivity {
+public class DonateActivity extends BaseActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -14,7 +14,7 @@ public class FullAdActivity extends BaseActivity {
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
-		setContentView(R.layout.fullad);
+		setContentView(R.layout.donate);
 		
 	}
 

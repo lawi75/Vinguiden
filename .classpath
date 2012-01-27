@@ -11,5 +11,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry kind="lib" path="C:/lawi/dev/lib/PayPal_MPL_1.5.5.44_Android-Developer-Package/MPL Library/PayPal_MPL.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

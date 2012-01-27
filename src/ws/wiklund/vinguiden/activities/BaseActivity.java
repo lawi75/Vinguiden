@@ -18,11 +18,21 @@ import ws.wiklund.vinguiden.db.WineDatabaseHelper;
 import ws.wiklund.vinguiden.model.Category;
 import ws.wiklund.vinguiden.model.Country;
 import ws.wiklund.vinguiden.util.DownloadImageTask;
+import ws.wiklund.vinguiden.util.PayPalFactory;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
+import com.paypal.android.MEP.CheckoutButton;
+import com.paypal.android.MEP.PayPal;
+import com.paypal.android.MEP.PayPalPayment;
+import com.quietlycoding.android.picker.NumberPickerDialog;
+import com.quietlycoding.android.picker.NumberPickerDialog.OnNumberSetListener;
 
 public class BaseActivity extends Activity {
 	private final DateFormat dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM);
@@ -36,7 +46,7 @@ public class BaseActivity extends Activity {
 	private static Set<Category> categories = new HashSet<Category>();
 
 	private WineDatabaseHelper helper;
-
+	
 	public static int lightVersion = 1; 
 
 	/** Called when the activity is first created. */
@@ -47,9 +57,15 @@ public class BaseActivity extends Activity {
 		decimalFormat.setDecimalSeparatorAlwaysShown(true);
 		decimalFormat.setParseBigDecimal(true);
 
-		helper = new WineDatabaseHelper(this);
+		helper = new WineDatabaseHelper(this);		
     }
     
+    public void skip(View view) {    	
+    	Intent intent = new Intent(getApplicationContext(), WineListActivity.class);
+    	startActivityForResult(intent, 0);
+    	finish();
+    }
+
     protected void setText(TextView view, String value) {
 		if (value != null) {
 			view.setText(value);
@@ -84,6 +100,31 @@ public class BaseActivity extends Activity {
 		//TODO dialog if new is selected
 		
 		return categories;
+	}
+	
+	protected CheckoutButton getCheckoutButton() {
+		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		params.span = 2;
+		params.topMargin = 10;
+		
+		CheckoutButton btn = PayPalFactory.getPayPal().getCheckoutButton(this, PayPal.BUTTON_152x33, CheckoutButton.TEXT_DONATE);
+		btn.setLayoutParams(params);
+		//RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		//params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		//btn.setLayoutParams(params);
+		
+			//android:layout_span="2"
+			//android:background="@drawable/custom_button2"
+		
+		
+		btn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				donate();
+			}
+		});
+		
+		return btn;
 	}
 	
 	public Double getDoubleFromDecimalString(String value) {
@@ -144,5 +185,30 @@ public class BaseActivity extends Activity {
 		
 		return strengths;
 	}
+	
+	private void donate() {
+		NumberPickerDialog pickerDialog = new NumberPickerDialog(this, -1, 20);
+		pickerDialog.setTitle(getString(R.string.donateTitle));
+		pickerDialog.setOnNumberSetListener(new OnNumberSetListener() {
+			@Override
+			public void onNumberSet(int selectedNumber) {
+				PayPalPayment payment = new PayPalPayment();
+
+				payment.setSubtotal(new BigDecimal(selectedNumber));
+
+				payment.setCurrencyType("SEK");
+
+				payment.setRecipient("vinguiden@wiklund.ws");
+
+				payment.setPaymentType(PayPal.PAYMENT_TYPE_PERSONAL);
+
+				Intent checkoutIntent = PayPal.getInstance().checkout(payment, BaseActivity.this);
+
+				startActivityForResult(checkoutIntent, 1);					
+			}
+		});
+		
+		pickerDialog.show();			
+    }
 	
 }

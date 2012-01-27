@@ -14,8 +14,8 @@
 		android:layout_height="wrap_content"
 		ads:adUnitId="a14ef3028f69666"
 		ads:adSize="BANNER"
+		ads:testDevices="TEST_EMULATOR"
 		ads:loadAdOnCreate="true"
-		ads:testDevices = "TEST_EMULATOR"
 		android:layout_span="2" />			 	    		    
 	    	    
 	</TableRow>
@@ -30,7 +30,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"	
 			android:singleLine="true"
-			android:numeric="signed"
+			android:inputType="number"
     		android:hint="@string/systembolaget_no_hint"/>
 		 
 		<ImageButton

@@ -2,9 +2,11 @@ package ws.wiklund.vinguiden.activities;
 
 import java.io.InputStream;
 
+import com.paypal.android.MEP.CheckoutButton;
 import ws.wiklund.vinguiden.R;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 public class AboutActivity extends BaseActivity {
@@ -15,8 +17,13 @@ public class AboutActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about);
         
-        TextView eula= (TextView)findViewById(R.id.eula);
+        TableRow row = (TableRow) findViewById(R.id.donate);
 
+        CheckoutButton launchPayPalButton = getCheckoutButton();
+        row.addView(launchPayPalButton);
+        
+        TextView eula = (TextView)findViewById(R.id.eula);
+        
         try {
             InputStream in = getResources().openRawResource(R.raw.eula);
 

@@ -75,11 +75,11 @@ public class AddWineActivity extends BaseActivity {
 		if(no != null && no.length() > 0 && Pattern.matches("^\\d*$", no)) {
 			if(!exists(no)) {
 				return true;
-			} else {
-				Toast.makeText(getApplicationContext(), "Du har redan lagt till vin med nummer " + no, Toast.LENGTH_SHORT).show();  		
+			} else {				
+				Toast.makeText(getApplicationContext(), getString(R.string.wineExist) + " " + no, Toast.LENGTH_SHORT).show();  		
 			}
 		} else {
-			Toast.makeText(getApplicationContext(), "Du måste ange ett nummer", Toast.LENGTH_SHORT).show();  		
+			Toast.makeText(getApplicationContext(), getString(R.string.provideNo), Toast.LENGTH_SHORT).show();  		
 		}
 		
 		return false;
