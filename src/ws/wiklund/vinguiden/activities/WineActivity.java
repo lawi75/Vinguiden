@@ -10,10 +10,14 @@ import ws.wiklund.vinguiden.model.Producer;
 import ws.wiklund.vinguiden.model.Provider;
 import ws.wiklund.vinguiden.model.Rating;
 import ws.wiklund.vinguiden.model.Wine;
+import ws.wiklund.vinguiden.util.facebook.FacebookConnector;
+import ws.wiklund.vinguiden.util.facebook.SessionEvents;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,6 +29,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
@@ -34,7 +39,16 @@ import com.facebook.android.FacebookError;
 public class WineActivity extends BaseActivity implements DialogListener {	
 	private Wine wine;
 	private Facebook facebook;
+	private FacebookConnector connector;
+	private final Handler facebookHandler = new Handler();
 
+	final Runnable updateFacebookNotification = new Runnable() {
+        public void run() {
+        	Toast.makeText(getBaseContext(), getString(R.string.facebookPosted), Toast.LENGTH_LONG).show();
+        }
+    };
+
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -50,7 +64,9 @@ public class WineActivity extends BaseActivity implements DialogListener {
 
 		Log.d(WineActivity.class.getName(), "Wine: " + wine);
 		
-		populateUI();
+		connector = new FacebookConnector("263921010324730", this, getApplicationContext(), new String[] {"publish_stream", "read_stream", "offline_access"});
+		
+		populateUI();		
 	}
 	
 	@Override
@@ -67,9 +83,31 @@ public class WineActivity extends BaseActivity implements DialogListener {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
 			case R.id.menuShareOnFacebook:
-		        facebook = new Facebook("263921010324730");
-		        facebook.authorize(this, new String[] {"publish_stream", "read_stream", "offline_access"}, this);		
-				return true;
+				if (connector.getFacebook().isSessionValid()) {
+					new FacebookPostMessageTask().execute();
+				} else {
+					SessionEvents.addAuthListener(new SessionEvents.AuthListener() {
+						@Override
+						public void onAuthSucceed() {
+							new FacebookPostMessageTask().execute();
+						}
+						
+						@Override
+						public void onAuthFail(String error) {
+						}
+					});
+
+					connector.login();
+				}
+				
+				
+				
+				/*facebook = new Facebook();
+		        facebook.authorize(
+		        		this, 
+		        		new String[] {"publish_stream", "read_stream", "offline_access"}, 
+		        		this);*/
+		        return true;
 			case R.id.menuRateWine:
 				final Dialog viewDialog = new Dialog(this); 
 				viewDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND, WindowManager.LayoutParams.FLAG_BLUR_BEHIND); 
@@ -175,9 +213,11 @@ public class WineActivity extends BaseActivity implements DialogListener {
 	}
 
 	@Override
-	public void onCancel() {
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		this.connector.getFacebook().authorizeCallback(requestCode, resultCode, data);
 	}
 
+	
 	private void populateUI() {
 		setThumbFromUrl(wine.getThumb());
 		
@@ -240,6 +280,44 @@ public class WineActivity extends BaseActivity implements DialogListener {
 		TextView added = (TextView) findViewById(R.id.Text_added);
 		
 		added.setText(getDataAsString((wine.getAdded() != null ? wine.getAdded() : new Date())));
+	}
+	
+	
+	private class FacebookPostMessageTask extends AsyncTask<Void, Void, Void> {
+	    
+		@Override
+		protected Void doInBackground(Void... params) {
+			Bundle bundle = new Bundle();
+			bundle.putString("picture", SystembolagetParser.BASE_URL + wine.getThumb());
+			bundle.putString("name", getString(R.string.recommend_wine_header));
+			bundle.putString("link", SystembolagetParser.BASE_URL + "/" + wine.getNo());
+			
+			StringBuilder builder = new StringBuilder(getString(R.string.recommend_wine));
+			builder.append(" ").append(wine.getName());
+			
+			if(wine.getNo() != -1) {
+				builder.append(" (" + wine.getNo() + ")"); 
+			}
+			
+			if(wine.getRating() != -1) {
+				builder.append(" ").append(getString(R.string.recommend_wine1)).append(" ");					
+				builder.append(getDecimalStringFromNumber(wine.getRating())).append(" ").append(getString(R.string.recommend_wine2));
+			}
+			
+			bundle.putString("description", builder.toString());
+
+			connector.postMessageOnWall(bundle);
+			facebookHandler.post(updateFacebookNotification);
+			return null;
+		}
+		
+	}
+
+
+	@Override
+	public void onCancel() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

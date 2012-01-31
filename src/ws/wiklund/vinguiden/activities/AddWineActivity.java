@@ -73,10 +73,15 @@ public class AddWineActivity extends BaseActivity {
 	
 	private boolean isValidNo(String no) {
 		if(no != null && no.length() > 0 && Pattern.matches("^\\d*$", no)) {
-			if(!exists(no)) {
-				return true;
-			} else {				
-				Toast.makeText(getApplicationContext(), getString(R.string.wineExist) + " " + no, Toast.LENGTH_SHORT).show();  		
+			try {
+				if(!exists(no)) {
+					return true;
+				} else {				
+					Toast.makeText(getApplicationContext(), getString(R.string.wineExist) + " " + no, Toast.LENGTH_SHORT).show();  		
+				}
+			} catch (NumberFormatException e) {
+	        	Log.d(AddWineActivity.class.getName(), "Invalid search string: " + no);		        	
+				Toast.makeText(getApplicationContext(), String.format(getString(R.string.invalidNoError), no), Toast.LENGTH_SHORT).show();
 			}
 		} else {
 			Toast.makeText(getApplicationContext(), getString(R.string.provideNo), Toast.LENGTH_SHORT).show();  		
@@ -85,7 +90,7 @@ public class AddWineActivity extends BaseActivity {
 		return false;
 	}
 
-	private boolean exists(String no) {
+	private boolean exists(String no) throws NumberFormatException {
 		return helper.getWineIdFromNo(Integer.valueOf(no)) != -1;
 	}
 
@@ -102,12 +107,15 @@ public class AddWineActivity extends BaseActivity {
 	        try {
 	    		Document doc = Jsoup.connect(SystembolagetParser.BASE_URL + "/" + this.no).get();
 
-				if(isValidResponse(doc)) {
+				if(isValidResponse(doc) && this.no != null) {
 					return SystembolagetParser.parseResponse(doc, this.no);
+				} else if(this.no == null) {
+		        	Log.w(AddWineActivity.class.getName(), "Failed to get info for wine,  no is null");		        	
+		        	errorMsg = getString(R.string.genericParseError);
 				}
 			} catch (IOException e) {
 	        	Log.w(AddWineActivity.class.getName(), "Failed to get info for wine with no: " + this.no, e);
-	        	errorMsg = "Misslyckades med att hämta information från www.systembolaget.se, var god försök igen";
+	        	errorMsg = getString(R.string.genericParseError);
 			}
 
 	        return null;
@@ -121,7 +129,7 @@ public class AddWineActivity extends BaseActivity {
 				intent.putExtra("ws.wiklund.vinguiden.activities.Wine", wine);
 		    	startActivityForResult(intent, 0);
 			} else {
-				Toast.makeText(getApplicationContext(), errorMsg == null ? "Nummer " + this.no + " finns inte hos Systembolaget" : errorMsg, Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), errorMsg == null ? String.format(getString(R.string.missingNoError), this.no) : errorMsg, Toast.LENGTH_SHORT).show();
 				errorMsg = null;
 				dialog.dismiss();
 			}

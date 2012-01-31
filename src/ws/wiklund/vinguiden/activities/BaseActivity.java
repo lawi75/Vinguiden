@@ -103,26 +103,28 @@ public class BaseActivity extends Activity {
 	}
 	
 	protected CheckoutButton getCheckoutButton() {
+		return getCheckoutButton(PayPal.BUTTON_152x33);
+	}
+	
+	protected CheckoutButton getCheckoutButton(int btnSize) {
 		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		params.span = 2;
 		params.topMargin = 10;
 		
-		CheckoutButton btn = PayPalFactory.getPayPal().getCheckoutButton(this, PayPal.BUTTON_152x33, CheckoutButton.TEXT_DONATE);
-		btn.setLayoutParams(params);
-		//RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		//params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		//btn.setLayoutParams(params);
+		PayPal payPal = PayPalFactory.getPayPal();
 		
-			//android:layout_span="2"
-			//android:background="@drawable/custom_button2"
-		
-		
-		btn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				donate();
-			}
-		});
+		CheckoutButton btn = null;
+		if (payPal != null) {
+			btn = payPal.getCheckoutButton(this, btnSize,
+					CheckoutButton.TEXT_DONATE);
+			btn.setLayoutParams(params);
+			btn.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					donate();
+				}
+			});
+		}
 		
 		return btn;
 	}

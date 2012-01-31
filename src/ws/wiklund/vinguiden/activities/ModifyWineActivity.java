@@ -2,6 +2,7 @@ package ws.wiklund.vinguiden.activities;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 
 import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.bolaget.WineType;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 
 public class ModifyWineActivity extends BaseActivity {
 	private Wine wine;
+	private Random rand;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,8 @@ public class ModifyWineActivity extends BaseActivity {
 			setTitle(wine.getName());
 			populateUI();
 		}
+		
+		rand = new Random();
 	}
 	
 	@Override
@@ -164,7 +168,11 @@ public class ModifyWineActivity extends BaseActivity {
         if(!isLightVersion()) {
     		intent = new Intent(getApplicationContext(), WineListActivity.class);
         } else {
-        	intent = new Intent(getApplicationContext(), FullAdActivity.class);
+        	if (rand.nextInt(10) == 0) {
+            	intent = new Intent(getApplicationContext(), DonateActivity.class);
+            } else {
+            	intent = new Intent(getApplicationContext(), FullAdActivity.class);
+            }
         }
         
     	startActivityForResult(intent, 0);

@@ -12,7 +12,7 @@
 		android:layout_height="fill_parent"
         android:layout_gravity="center"
 		ads:adUnitId="a14ef3028f69666"
-		ads:testDevices="TEST_EMULATOR"
+		ads:testDevices="TEST_EMULATOR, 00B6F3EEBADC5F6DE037CCCE5149940B"
 		ads:adSize="BANNER"
 		ads:loadAdOnCreate="true" />			 	    		    
     

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Vinguiden</string>
+    <string name="app_name">Min vinlista</string>
     <string name="app_by">by lawi75</string>
     <string name="search_wine">Sök</string>
     <string name="wine_list_name">Min vinlista</string>
@@ -23,12 +23,13 @@
     <string name="rate">Betyg</string>
     <string name="rating">Betygsätt</string>
     <string name="change">Ändra</string>
+    <string name="recommend_wine_header">Vintips via Min vinlista för Android</string>
     <string name="recommend_wine">Jag har druckit ett vin som heter</string>
     <string name="recommend_wine1">som jag ger betyg</string>
     <string name="recommend_wine2">av 5</string>
     <string name="about">Om</string>
     <string name="aboutText"></string>
-    <string name="aboutIcons">Information som visas gällande viner kommer från www.systembolaget.se. Vinguiden har ingen relation till Systembolaget och Systembolaget har inget ansvar för någon information som visas på Vinguiden. All beställning, köp och utlämning sker från/av/hos Systembolaget.\n\n\nIkonerna som Vinguiden använder sig av kommer från:</string>
+    <string name="aboutIcons">Information som visas gällande viner kommer från www.systembolaget.se. Min vinlista har ingen relation till Systembolaget och Systembolaget har inget ansvar för någon information som visas på Min vinlista. All beställning, köp och utlämning sker från/av/hos Systembolaget.\n\n\nIkonerna som Min vinlista använder sig av kommer från:</string>
     <string name="aboutOxygen">www.oxygen-icons.org</string>
     <string name="aboutVisualpharm">www.visualpharm.com</string>
     <string name="systembolaget">www.systembolaget.se</string>
@@ -52,7 +53,7 @@
     <string name="sortOnTypeSub">Filtrera på vinsort</string>
     <string name="sortOnCategorySub">Filtrera på Kategori</string>
     <string name="donateTitle">Tack!</string>
-    <string name="donate">Tack för att du vill hjälpa till att förbättra Vinguiden, välj belopp (SEK) och klicka på donera</string>
+    <string name="donate">Tack för att du vill hjälpa till att förbättra Min vinlista, välj belopp (SEK) och klicka på donera</string>
     <string name="sek">SEK</string>
 
     <string name="dialog_set_number">Donera</string>
@@ -61,5 +62,12 @@
     <string name="wineExist">Du har redan lagt till vin med nummer</string>
     <string name="provideNo">Du måste ange ett nummer</string>
     <string name="pleaseRetry">Vänligen prova igen om några sekunder!</string>
+    <string name="facebookPosted">Ditt vintips finns nu på Facebook</string>
+    
+    <!-- Error Messages -->
+    <string name="genericParseError">Misslyckades med att hämta information från www.systembolaget.se, var god försök igen</string>
+    <string name="missingNoError">Nummer %1$s finns inte hos Systembolaget</string>
+    <string name="invalidNoError">%1$s är inte ett giltigt nummer</string>
+    
     
 </resources>

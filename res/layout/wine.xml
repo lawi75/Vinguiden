@@ -215,7 +215,7 @@
 			android:paddingTop="30dip"
 			ads:adUnitId="a14ef3028f69666"
 			ads:adSize="BANNER"
-			ads:testDevices="TEST_EMULATOR"			
+			ads:testDevices="TEST_EMULATOR, 00B6F3EEBADC5F6DE037CCCE5149940B"
 			ads:loadAdOnCreate="true"/>	
 							 
 	</LinearLayout>
