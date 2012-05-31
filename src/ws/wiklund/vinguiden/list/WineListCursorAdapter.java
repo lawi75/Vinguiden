@@ -9,7 +9,7 @@ import java.util.Set;
 
 import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.bolaget.SystembolagetParser;
-import ws.wiklund.vinguiden.bolaget.WineType;
+import ws.wiklund.vinguiden.model.WineType;
 import ws.wiklund.vinguiden.util.BitmapManager;
 import android.content.Context;
 import android.database.Cursor;
@@ -67,9 +67,14 @@ public class WineListCursorAdapter extends SimpleCursorAdapter implements Sectio
 		Cursor c = getCursor();
 		
 		if (c.moveToPosition(position)) {
-			String name = c.getString(1);
+			int noBottles = c.getInt(22); 
+			StringBuilder name = new StringBuilder(c.getString(1));
 			
-			holder.titleView.setText(name);
+			if(noBottles > 0) {
+				name.append("(").append(c.getInt(22)).append(")");
+			}
+					
+			holder.titleView.setText(name.toString());
 			holder.typeView.setText(WineType.fromId(c.getInt(3)).toString());
 			
 			int year = c.getInt(8); 
@@ -117,6 +122,6 @@ public class WineListCursorAdapter extends SimpleCursorAdapter implements Sectio
 	@Override
 	public Object[] getSections() {
 		return sections;
-	}  
+	}
 	
 }

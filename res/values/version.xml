@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item type="string" name="version">1</item>
+    <item type="string" name="version_type">1</item>
 </resources>

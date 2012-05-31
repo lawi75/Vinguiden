@@ -2,7 +2,6 @@ package ws.wiklund.vinguiden.model;
 
 import java.util.Date;
 
-import ws.wiklund.vinguiden.bolaget.WineType;
 
 @TableName(name = "wine")
 public class Wine extends BaseModel {
@@ -15,6 +14,7 @@ public class Wine extends BaseModel {
 	private int year = -1;
 	private Producer producer;
 	private double strength = -1;
+	private double price = -1;
 	private String usage;
 	private String taste;
 	private Provider provider;
@@ -22,23 +22,21 @@ public class Wine extends BaseModel {
 	private Date added;
 	private String comment;
 	private Category category;
-	
+	private int bottlesInCellar;
+
 	public Wine() {
 		this(null);
 	}
 	
 	public Wine(String name) {
-		this(-1, name);
-	}
-
-	public Wine(int id, String name) {
-		super(id, name);
+		super(name);
 	}
 
 	public Wine(int id, String name, int no, WineType type, String thumb,
-			Country country, int year, Producer producer, double strength,
-			String usage, String taste, Provider provider, float rating, String comment, Category category, Date added) {
-		this(id, name);
+			Country country, int year, Producer producer, double strength, double price,
+			String usage, String taste, Provider provider, float rating, String comment, 
+			Category category, Date added, int bottlesInCellar) {
+		super(id, name);
 		
 		this.no = no;
 		this.type = type;
@@ -47,6 +45,7 @@ public class Wine extends BaseModel {
 		this.year = year;
 		this.producer = producer;
 		this.strength = strength;
+		this.price = price;
 		this.usage = usage;
 		this.taste = taste;
 		this.provider = provider;
@@ -54,6 +53,7 @@ public class Wine extends BaseModel {
 		this.comment = comment;
 		this.category = category;
 		this.added = added;
+		this.bottlesInCellar = bottlesInCellar;
 	}
 
 	public int getNo() {
@@ -112,6 +112,14 @@ public class Wine extends BaseModel {
 		this.strength = strength;
 	}
 
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
 	public String getUsage() {
 		return usage;
 	}
@@ -167,16 +175,32 @@ public class Wine extends BaseModel {
 	public void setCategory(Category category) {
 		this.category = category;
 	}
+	
+	public boolean hasPrice() {
+		return price > 0;
+	}
+	
+	public int getBottlesInCellar() {
+		return bottlesInCellar;
+	}
+
+	public void setBottlesInCellar(int bottlesInCellar) {
+		this.bottlesInCellar = bottlesInCellar;
+	}
+
+	public boolean hasBottlesInCellar() {
+		return bottlesInCellar > 0;
+	}
 
 	@Override
 	public String toString() {
 		return "Wine [no=" + no + ", type=" + type + ", thumb=" + thumb
 				+ ", country=" + country + ", year=" + year + ", producer="
-				+ producer + ", strength=" + strength + ", usage=" + usage
-				+ ", taste=" + taste + ", provider=" + provider + ", rating="
-				+ rating + ", added=" + added + ", comment=" + comment + ", category="
-				+ category + ", getId()=" + getId() + ", getName()=" + getName()
-				+ ", isNew()=" + isNew();
+				+ producer + ", strength=" + strength + ", price=" + price
+				+ ", usage=" + usage + ", taste=" + taste + ", provider="
+				+ provider + ", rating=" + rating + ", added=" + added
+				+ ", comment=" + comment + ", category=" + category
+				+ ", bottlesInCellar=" + bottlesInCellar + "]";
 	}
 
 }

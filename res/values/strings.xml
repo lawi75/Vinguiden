@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Generic -->
     <string name="app_name">Min vinlista</string>
     <string name="app_by">by lawi75</string>
     <string name="search_wine">Sök</string>
@@ -35,14 +36,18 @@
     <string name="systembolaget">www.systembolaget.se</string>
     <string name="year">Årgång</string>
     <string name="strength">Alkoholhalt</string>
+    <string name="price">Pris</string>
+    <string name="totalValue">Totalt värde:</string>
     <string name="category">Kategori</string>
     <string name="newStr">Ny...</string>
     <string name="deleteTitle">Ta bort</string>
-    <string name="deleteWine">Vill du ta bort</string>
+    <string name="deleteWine">Vill du ta bort %1$s både från listan och källaren?</string>
     <string name="deleteFailed">Det gick inte att ta bort</string>
     <string name="wait">Vänligen vänta...</string>
+    <string name="upgrading">Uppdatering pågår, vänligen vänta...</string>
     <string name="sort_list">Sortera/Filtrera listen</string>
-
+    <string name="app_version">Version:</string>
+    
     <string name="sortOnName">Namn</string>
     <string name="sortOnRank">Betyg</string>
     <string name="sortOnType">Vinsort</string>
@@ -52,6 +57,22 @@
     <string name="sortOnRankSub">Sortera på Betyg fallande</string>
     <string name="sortOnTypeSub">Filtrera på vinsort</string>
     <string name="sortOnCategorySub">Filtrera på Kategori</string>
+    
+    <string name="wineExist">Du har redan lagt till vin med nummer</string>
+    <string name="provideNo">Du måste ange ett nummer</string>
+    <string name="pleaseRetry">Vänligen prova igen om några sekunder!</string>
+    <string name="facebookPosted">Ditt vintips finns nu på Facebook</string>
+    <string name="addToCellar">Lägg till i källaren</string>
+    <string name="removeFromCellar">Ta ut från källaren</string>
+    
+    <!-- Stats -->
+    <string name="stats">Statistik</string>
+    <string name="statsNow">Det finns %1$s olika viner i listan med ett snittbetyg på %2$s stjärnor</string>
+    <string name="cellarStatsNow">Just nu finns det %1$s flaskor i källaren till ett värde av %2$s</string>
+    <string name="amount">%1$s st</string>
+    
+    
+    <!-- Number Picker dialog -->
     <string name="donateTitle">Tack!</string>
     <string name="donate">Tack för att du vill hjälpa till att förbättra Min vinlista, välj belopp (SEK) och klicka på donera</string>
     <string name="sek">SEK</string>
@@ -59,15 +80,25 @@
     <string name="dialog_set_number">Donera</string>
     <string name="dialog_cancel">Avbryt</string>
     
-    <string name="wineExist">Du har redan lagt till vin med nummer</string>
-    <string name="provideNo">Du måste ange ett nummer</string>
-    <string name="pleaseRetry">Vänligen prova igen om några sekunder!</string>
-    <string name="facebookPosted">Ditt vintips finns nu på Facebook</string>
+    <string name="advanced">Avancerat</string>
+
+    <!-- Wine Cellar -->
+    <string name="cellar">Vinkällaren</string>
+    <string name="add">Lägg till</string>
+    <string name="bottles_in_cellar">%1$s flaskor i källaren till ett värde av %2$s</string>
+    
+    <!-- Reminder -->
+    <string name="reminderTitle">Dags att avnjuta %1$s st %2$s</string>
+    <string name="reminderNote">De är nu dags att avnjuta de flaskor som du la in i källaren %1$s</string>
+    <string name="reminderNote1">på plats %1$s</string>
     
     <!-- Error Messages -->
     <string name="genericParseError">Misslyckades med att hämta information från www.systembolaget.se, var god försök igen</string>
     <string name="missingNoError">Nummer %1$s finns inte hos Systembolaget</string>
     <string name="invalidNoError">%1$s är inte ett giltigt nummer</string>
+    
+    <!-- Whats new -->
+    <string name="whatsnew">Nyheter</string>
     
     
 </resources>

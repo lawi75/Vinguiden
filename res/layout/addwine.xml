@@ -43,6 +43,19 @@
 			android:background="@drawable/custom_button2"			
 			android:onClick="searchWine" />
 	</TableRow>
+	
+	<TableRow>
+	<com.google.ads.AdView 
+		android:id="@+id/adView1"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		ads:adUnitId="a14ef3028f69666"
+		ads:adSize="BANNER"
+		ads:testDevices="TEST_EMULATOR, 00B6F3EEBADC5F6DE037CCCE5149940B"
+		ads:loadAdOnCreate="true"
+		android:layout_span="2" />			 	    		    
+	    	    
+	</TableRow>
 </TableLayout>	    	
      	
 

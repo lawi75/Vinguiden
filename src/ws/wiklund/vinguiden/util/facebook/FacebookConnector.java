@@ -25,7 +25,7 @@ public class FacebookConnector {
 	private Activity activity;
 	private SessionListener mSessionListener = new SessionListener();
 	
-	public FacebookConnector(String appId,Activity activity,Context context,String[] permissions) {
+	public FacebookConnector(String appId, Activity activity, Context context, String[] permissions) {
 		this.facebook = new Facebook(appId);
 		
 		SessionStore.restore(facebook, context);
@@ -40,7 +40,7 @@ public class FacebookConnector {
 	
 	public void login() {
         if (!facebook.isSessionValid()) {
-            facebook.authorize(this.activity, this.permissions,new LoginDialogListener());
+            facebook.authorize(activity, this.permissions,new LoginDialogListener());
         }
     }
 	
@@ -54,7 +54,7 @@ public class FacebookConnector {
 		if (facebook.isSessionValid()) {
 		    try {
 				String response = facebook.request("me/feed", bundle,"POST");
-				System.out.println(response);
+				Log.d(FacebookConnector.class.getName(), "Facebook response: " + response);
 			} catch (IOException e) {
 				Log.w(FacebookConnector.class.getName(), "Failed to post message on Facebook wall", e);
 			}

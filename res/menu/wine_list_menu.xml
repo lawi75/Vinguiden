@@ -3,6 +3,11 @@
   xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<item
+		android:id="@+id/menuStats"
+		android:icon="@drawable/stats"
+		android:title="@string/stats" />    
+    
+   	<item
 		android:id="@+id/menuAbout"
 		android:icon="@drawable/about"
 		android:title="@string/about" />    

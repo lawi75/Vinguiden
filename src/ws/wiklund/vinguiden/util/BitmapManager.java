@@ -1,5 +1,6 @@
 package ws.wiklund.vinguiden.util;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
@@ -94,7 +95,11 @@ public enum BitmapManager {
 			cache.put(url, new SoftReference<Bitmap>(bitmap));
 			return bitmap;
 		} catch (IOException e) {
-			Log.w(BitmapManager.class.getName(), "Failed to download image", e);
+			if(e instanceof FileNotFoundException) {
+				Log.w(BitmapManager.class.getName(), "Failed to download image, File not found: " + url);
+			} else {
+				Log.w(BitmapManager.class.getName(), "Failed to download image", e);
+			}
 		}
 
 		return null;

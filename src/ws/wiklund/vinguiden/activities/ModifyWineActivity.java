@@ -2,16 +2,16 @@ package ws.wiklund.vinguiden.activities;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 
 import ws.wiklund.vinguiden.R;
-import ws.wiklund.vinguiden.bolaget.WineType;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
 import ws.wiklund.vinguiden.model.Category;
 import ws.wiklund.vinguiden.model.Country;
 import ws.wiklund.vinguiden.model.Producer;
 import ws.wiklund.vinguiden.model.Provider;
 import ws.wiklund.vinguiden.model.Wine;
+import ws.wiklund.vinguiden.model.WineType;
+import ws.wiklund.vinguiden.util.ViewHelper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,7 +26,7 @@ import android.widget.TextView;
 
 public class ModifyWineActivity extends BaseActivity {
 	private Wine wine;
-	private Random rand;
+	private ViewHelper viewHelper;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -42,12 +42,12 @@ public class ModifyWineActivity extends BaseActivity {
 
 		Log.d(ModifyWineActivity.class.getName(), "Wine: " + (wine != null ? wine.toString() : null));
 
+		viewHelper = new ViewHelper(this);
+
 		if (wine != null) {
 			setTitle(wine.getName());
 			populateUI();
 		}
-		
-		rand = new Random();
 	}
 	
 	@Override
@@ -78,21 +78,21 @@ public class ModifyWineActivity extends BaseActivity {
 	}	
 	
     private void populateUI() {
-    	setThumbFromUrl(wine.getThumb());
+    	viewHelper.setThumbFromUrl(findViewById(android.R.id.content), wine.getThumb());
 		TextView no = (TextView) findViewById(R.id.Text_no);
 		no.setText(String.valueOf(wine.getNo()));
 		
 		EditText name = (EditText) findViewById(R.id.Edit_name);
-		setText(name, wine.getName());
+		ViewHelper.setText(name, wine.getName());
 		
 		Spinner type = (Spinner) findViewById(R.id.Spinner_type);
 		populateAndSetTypeSpinner(type, wine.getType());
 		
 		Country c = wine.getCountry();
 		if (c != null) {
-			setCountryThumbFromUrl(c);
+			viewHelper.setCountryThumbFromUrl(findViewById(android.R.id.content), c);
 			EditText country = (EditText) findViewById(R.id.Edit_country);
-			setText(country, c.getName());
+			ViewHelper.setText(country, c.getName());
 		}
 		
 		Spinner year = (Spinner) findViewById(R.id.Spinner_year);
@@ -101,17 +101,20 @@ public class ModifyWineActivity extends BaseActivity {
 		Producer p = wine.getProducer();
 		if (p != null) {
 			EditText producer = (EditText) findViewById(R.id.Edit_producer);
-			setText(producer, p.getName());
+			ViewHelper.setText(producer, p.getName());
 		}
 		
 		Spinner strength = (Spinner) findViewById(R.id.Spinner_strength);
 		populateAndSetStrengthSpinner(strength, wine.getStrength());
 		
+		EditText price = (EditText) findViewById(R.id.Edit_price);
+		ViewHelper.setText(price, String.valueOf(wine.getPrice()));
+
 		EditText usage = (EditText) findViewById(R.id.Edit_usage);
-		setText(usage, wine.getUsage());
+		ViewHelper.setText(usage, wine.getUsage());
 		
 		EditText taste = (EditText) findViewById(R.id.Edit_taste);
-		setText(taste, wine.getTaste());
+		ViewHelper.setText(taste, wine.getTaste());
 		
 		Spinner category = (Spinner) findViewById(R.id.Spinner_category);
 		if(!isLightVersion()) {
@@ -126,11 +129,11 @@ public class ModifyWineActivity extends BaseActivity {
 		Provider p1 = wine.getProvider();
 		if (p1 != null) {
 			EditText provider = (EditText) findViewById(R.id.Edit_provider);
-			setText(provider, p1.getName());
+			ViewHelper.setText(provider, p1.getName());
 		}
 		
 		TextView added = (TextView) findViewById(R.id.Text_added);
-		added.setText(getDataAsString((wine.getAdded() != null ? wine.getAdded() : new Date())));
+		added.setText(ViewHelper.getDateAsString((wine.getAdded() != null ? wine.getAdded() : new Date())));
 	}
 
 	private void populateAndSetCategorySpinner(Spinner categorySpinner, Category category) {
@@ -141,10 +144,10 @@ public class ModifyWineActivity extends BaseActivity {
 	}
 
 	private void populateAndSetStrengthSpinner(Spinner strengthSpinner, double strength) {
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, getStrengths());
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, ViewHelper.getStrengths());
 		strengthSpinner.setAdapter(adapter);
 		
-		strengthSpinner.setSelection(adapter.getPosition(getDecimalStringFromNumber(strength) + " %"));
+		strengthSpinner.setSelection(adapter.getPosition(ViewHelper.getDecimalStringFromNumber(strength) + " %"));
 	}
 
 	private void populateAndSetTypeSpinner(Spinner typeSpinner, WineType type) {
@@ -168,11 +171,15 @@ public class ModifyWineActivity extends BaseActivity {
         if(!isLightVersion()) {
     		intent = new Intent(getApplicationContext(), WineListActivity.class);
         } else {
+        	intent = new Intent(getApplicationContext(), FullAdActivity.class);
+
+        	/* Removed PayPal for now
         	if (rand.nextInt(10) == 0) {
             	intent = new Intent(getApplicationContext(), DonateActivity.class);
             } else {
             	intent = new Intent(getApplicationContext(), FullAdActivity.class);
             }
+            */
         }
         
     	startActivityForResult(intent, 0);
@@ -188,6 +195,7 @@ public class ModifyWineActivity extends BaseActivity {
 
 		String producer = ((EditText) findViewById(R.id.Edit_producer)).getText().toString();
 		String strength = getStrenghtFromSpinner();
+		String price = ((EditText) findViewById(R.id.Edit_price)).getText().toString();
 		String usage = ((EditText) findViewById(R.id.Edit_usage)).getText().toString();
 		String taste = ((EditText) findViewById(R.id.Edit_taste)).getText().toString();
 		String provider = ((EditText) findViewById(R.id.Edit_provider)).getText().toString();
@@ -202,12 +210,13 @@ public class ModifyWineActivity extends BaseActivity {
     	}
 		
 		wine.setName(name);
-		wine.setType(type);
-		
-		
+		wine.setType(type);		
 		wine.setYear(year);
+		wine.setStrength(ViewHelper.getDoubleFromDecimalString(strength));
 		
-		wine.setStrength(getDoubleFromDecimalString(strength));
+		if (price.length() > 0) {
+			wine.setPrice(ViewHelper.getDoubleFromDecimalString(price));
+		}
 		
 		wine.setUsage(usage);
 		wine.setTaste(taste);

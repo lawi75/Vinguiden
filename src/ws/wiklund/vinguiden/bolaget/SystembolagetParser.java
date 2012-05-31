@@ -1,5 +1,8 @@
 package ws.wiklund.vinguiden.bolaget;
 
+import java.io.IOException;
+
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -8,6 +11,8 @@ import ws.wiklund.vinguiden.model.Country;
 import ws.wiklund.vinguiden.model.Producer;
 import ws.wiklund.vinguiden.model.Provider;
 import ws.wiklund.vinguiden.model.Wine;
+import ws.wiklund.vinguiden.model.WineType;
+import ws.wiklund.vinguiden.util.ViewHelper;
 import android.util.Log;
 
 public class SystembolagetParser {
@@ -22,40 +27,56 @@ public class SystembolagetParser {
 	private static final String SWEETNESS = "Sockerhalt";
 	
 
-	public static Wine parseResponse(Document doc, String no) {
-	    /*
-         * Capture groups:
-         * GROUP                    EXAMPLE DATA
-         * 1: Name			        181 Merlot
-         * 2: Type                  Rött vin
-         * 3: ThumbUrl              /img/flags/usa.gif
-         * 4: Country               USA
-         * 5: Beverage facts 
-         * 		Year					2008
-         * 		Producer				181 Wine Cellars
-         * 		Supplier				Hermansson & Co AB
-         * 		Strength				14,0 %
-         * 		Sugar level			Mindre än 5,0 gram/liter
-         * 		Usage				Serveras vid cirka 16 grader till kyckling...
-         * 		Taste				Kryddig, bärig smak med insla...
-         * 		...
-         * 6: Wine thumb			/ImageVaultFiles/id_15115/cf_399/528115.jpg
-         */   			    
-		Element productName = doc.select("span.produktnamnfet").first();
+	public static Wine parseResponse(String no) throws IOException {
+		Document doc = Jsoup.connect(BASE_URL + "/" + no).get();
 		
-		Element type = doc.select("span.character > strong").first();
-		Element country = doc.select("div.country > img").first();
-		Element thumb = doc.select("div.image > img").first();
+		if(isValidResponse(doc)) {
+			Element productName = doc.select("span.produktnamnfet").first();
+			
+			Element type = doc.select("span.character > strong").first();
+			Element country = doc.select("div.country > img").first();
+			Element thumb = doc.select("div.image > img").first();
+			
+			Elements e = doc.select("td:contains(Pris)");
+			Element price = null;
+			if(e != null && !e.isEmpty()) {
+				price = e.first().nextElementSibling();
+			}
+			
+			Wine wine = new Wine(productName.text());
+			wine.setNo(Integer.valueOf(no));
+			wine.setType(getTypeFromString(type.text()));
+			wine.setCountry(new Country(country.attr("alt"),country.attr("src")));
+			wine.setThumb(thumb.attr("src"));
+			
+			if (price != null) {
+				updatePrice(wine, price);
+			}
+			updateBeverageFacts(wine, doc.select("ul.beverageFacts"));
+			
+			return wine;
+		}
 		
-		Wine wine = new Wine(productName.text());
-		wine.setNo(Integer.valueOf(no));
-		wine.setType(getTypeFromString(type.text()));
-		wine.setCountry(new Country(country.attr("alt"),country.attr("src")));
-		wine.setThumb(thumb.attr("src"));
+		return null;
+	}
 
-		updateBeverageFacts(wine, doc.select("ul.beverageFacts"));
-		
-		return wine;
+	private static void updatePrice(Wine wine, Element price) {
+		String p = null;
+
+		try {
+			if (price != null) {
+				p = price.text();
+				int idx = p.indexOf(" ");
+				if (idx != -1) {
+					p = p.substring(0, idx);					
+					wine.setPrice(ViewHelper.getDoubleFromDecimalString(p));
+				} else {
+					Log.d(SystembolagetParser.class.getName(), "Invalid price tag[" + price.text() + "]");			
+				}
+			}
+		} catch (NumberFormatException e) {
+			Log.d(SystembolagetParser.class.getName(), "Failed to parse price data [" + p + "]");			
+		}
 	}
 
 	private static void updateBeverageFacts(Wine wine, Elements beverageFacts) {
@@ -109,5 +130,10 @@ public class SystembolagetParser {
 		
 		return type;
 	}
+	
+	private static boolean isValidResponse(Document doc) {
+		return doc.select("div.top_exception_message").first() == null;
+	}
+	
 
 }

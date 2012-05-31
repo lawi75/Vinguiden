@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?> 
-<LinearLayout 
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android" 
-	android:orientation="vertical" 
-	android:layout_width="fill_parent" 
-	android:layout_height="fill_parent" 
+    android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
 	android:paddingLeft="10dip">
-	
-	<TableLayout 
+
+   	<TableLayout 
 		android:id="@+id/aboutLayout"			
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"  
@@ -101,18 +100,25 @@
 				android:text="@string/aboutVisualpharm" />	
 		</TableRow>
 
-	</TableLayout>
-		
-	<ScrollView
-	    android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-	    >
+		<TableRow>
 			<TextView 
 			    android:id="@+id/eula"
-				android:layout_width="fill_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:padding="10dip"				
+				android:layout_span="2" 
 			    /> 
-	    	    
-	</ScrollView>		
-</LinearLayout> 
+		</TableRow>
+					
+		<TableRow>
+			<TextView
+    		    android:id="@+id/version"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingLeft="10dip"
+				android:layout_span="2" 
+				/>	
+		</TableRow>
+		
+	</TableLayout>
+</ScrollView>		

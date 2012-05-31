@@ -8,8 +8,13 @@ public class DatabaseUpgrader {
 	//Available DB versions
 	private static final int VERSION_1 = 1;
 	private static final int VERSION_2 = 2;
+	private static final int VERSION_3 = 3;
 
 	private SQLiteDatabase db;
+
+	public DatabaseUpgrader() {
+
+	}
 
 	public void doUpdate(SQLiteDatabase db, int oldVersion, int newVersion) {
 		Log.d(DatabaseUpgrader.class.getName(), "Will upgrade from DB version [" + oldVersion + "] to DB version [" + newVersion + "]");
@@ -29,6 +34,7 @@ public class DatabaseUpgrader {
 			case VERSION_1:
 				if(newVersion > VERSION_1) {
 					version = moveToVersion2();
+					Log.d(DatabaseUpgrader.class.getName(), "Upgraded DB from version [" + oldVersion + "] to version [" + version + "]");
 					
 					if(version < newVersion) {
 						return upgrade(version, newVersion);
@@ -39,9 +45,18 @@ public class DatabaseUpgrader {
 				
 				break;				
 			case VERSION_2:
-				//TODO when needed
+				if(newVersion > VERSION_2) {
+					version = moveToVersion3();
+					Log.d(DatabaseUpgrader.class.getName(), "Upgraded DB from version [" + oldVersion + "] to version [" + version + "]");
+
+					if(version < newVersion) {
+						return upgrade(version, newVersion);
+					} 
+					
+					return VERSION_3;
+				}
+
 				break;
-	
 			default:
 				break;
 		}
@@ -107,5 +122,20 @@ public class DatabaseUpgrader {
 		
 		return VERSION_2;
 	}
+	
+	private int moveToVersion3() throws SQLException {
+		Log.d(DatabaseUpgrader.class.getName(), "Moving to version 3 of DB");
 
+		//Add price column to wine
+		db.execSQL("ALTER TABLE " + WineDatabaseHelper.WINE_TABLE + " ADD COLUMN price float");
+		Log.d(DatabaseUpgrader.class.getName(), "Added price column");
+		
+		//Create CELLAR table
+		Log.d(DatabaseUpgrader.class.getName(), "Creating cellar table");
+		db.execSQL(WineDatabaseHelper.DB_CREATE_CELLAR);
+		Log.d(DatabaseUpgrader.class.getName(), "Cellar table created");
+
+		return VERSION_3;
+	}
+	
 }

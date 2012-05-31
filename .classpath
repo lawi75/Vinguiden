@@ -7,10 +7,12 @@
 			<attribute name="javadoc_location" value="jar:file:/C:/lawi/dev/lib/jsoup-1.6.1/jsoup-1.6.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/lawi/dev/lib/GoogleAdMobAdsSdkAndroid-4.3.1/GoogleAdMobAdsSdk-4.3.1.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="lib" path="C:/lawi/dev/lib/PayPal_MPL_1.5.5.44_Android-Developer-Package/MPL Library/PayPal_MPL.jar"/>
+	<classpathentry kind="lib" path="C:/lawi/dev/android-sdk-windows/extras/android/compatibility/v4/android-support-v4.jar"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK/Android NumberPicker"/>
+	<classpathentry kind="lib" path="C:/lawi/dev/lib/GoogleAdMobAdsSdkAndroid-6.0.0/GoogleAdMobAdsSdk-6.0.0.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

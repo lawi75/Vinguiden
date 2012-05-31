@@ -3,8 +3,6 @@ package ws.wiklund.vinguiden.activities;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.bolaget.SystembolagetParser;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
@@ -34,6 +32,7 @@ public class AddWineActivity extends BaseActivity {
         
         if(!isLightVersion()) {
     		findViewById(R.id.adView).setVisibility(View.GONE);
+    		findViewById(R.id.adView1).setVisibility(View.GONE);
         }
 
         helper = new WineDatabaseHelper(this);
@@ -103,15 +102,13 @@ public class AddWineActivity extends BaseActivity {
 		@Override
 		protected Wine doInBackground(String... no) {
 			this.no = no[0];
-	    	//http://www.systembolaget.se/70989
-	        try {
-	    		Document doc = Jsoup.connect(SystembolagetParser.BASE_URL + "/" + this.no).get();
 
-				if(isValidResponse(doc) && this.no != null) {
-					return SystembolagetParser.parseResponse(doc, this.no);
-				} else if(this.no == null) {
+	        try {
+				if(this.no == null) {
 		        	Log.w(AddWineActivity.class.getName(), "Failed to get info for wine,  no is null");		        	
 		        	errorMsg = getString(R.string.genericParseError);
+				} else {
+					return SystembolagetParser.parseResponse(this.no);
 				}
 			} catch (IOException e) {
 	        	Log.w(AddWineActivity.class.getName(), "Failed to get info for wine with no: " + this.no, e);
@@ -148,10 +145,6 @@ public class AddWineActivity extends BaseActivity {
 			super.onPreExecute();
 		}
 		
-		private boolean isValidResponse(Document doc) {
-			return doc.select("div.top_exception_message").first() == null;
-		}
-
 	}
     
 }
