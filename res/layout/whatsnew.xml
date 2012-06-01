@@ -8,24 +8,35 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Version 2.0"
+        android:text="@string/version201"
         android:textStyle="bold"/>
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Div buggfixar, en första enkel version av vinkällare samt statistik över dina viner." />
+        android:text="@string/version201msg" />
+    
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/version20"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/version20msg" />
     
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:textStyle="bold"
-        android:text="Version 1.1.0" />
+        android:text="@string/version110" />
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Div buggfixar samt bland annat fungerar dela på Facebook nu. Det finns även möjlighet att donera pengar om man tycker applikationen är bra." />
+        android:text="@string/version110msg" />
     
 </LinearLayout>

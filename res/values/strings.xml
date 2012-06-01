@@ -99,6 +99,14 @@
     
     <!-- Whats new -->
     <string name="whatsnew">Nyheter</string>
+    <string name="version110">Version 1.1.0</string>
+    <string name="version110msg">Div buggfixar samt bland annat fungerar dela på Facebook nu. Det finns även möjlighet att donera pengar om man tycker applikationen är bra.</string>
+    <string name="version20">Version 2.0</string>
+    <string name="version20msg">Div buggfixar, en första enkel version av vinkällare samt statistik över dina viner.</string>
+    <string name="version201">Version 2.0.1</string>
+    <string name="version201msg">Div buggfixar</string>
+    
+    
     
     <!-- App rating -->
     <string name="rating_message">Om du tycker om %1$s så skulle det vara väldigt uppskattat om du tog dig tid att betygsätta den på Google Play. Tack för hjälpen!</string>
