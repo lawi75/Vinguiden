@@ -7,6 +7,7 @@ import ws.wiklund.vinguiden.db.DatabaseUpgrader;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
 import ws.wiklund.vinguiden.list.WineListCursorAdapter;
 import ws.wiklund.vinguiden.model.Wine;
+import ws.wiklund.vinguiden.util.AppRater;
 import ws.wiklund.vinguiden.util.Selectable;
 import ws.wiklund.vinguiden.util.Sortable;
 import ws.wiklund.vinguiden.util.ViewHelper;
@@ -88,6 +89,8 @@ public class WineListActivity extends CustomListActivity {
 		});
 
 		initVersions();
+		
+		AppRater.app_launched(this);
 
 	}
 
