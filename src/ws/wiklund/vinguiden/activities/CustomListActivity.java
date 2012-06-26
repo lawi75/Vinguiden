@@ -5,6 +5,7 @@ import java.util.List;
 
 import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.util.Selectable;
+import ws.wiklund.vinguiden.util.SelectableAdapter;
 import ws.wiklund.vinguiden.util.Sortable;
 import ws.wiklund.vinguiden.util.ViewHelper;
 import android.app.AlertDialog;
@@ -14,7 +15,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,17 +22,16 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 public abstract class CustomListActivity extends ListActivity {
 	private List<Sortable> sortableItems;
-	private List<Selectable> selectableItems;
 
 	private SortableAdapter sortableAdapter;
 	private SelectableAdapter selectableAdapter;
 
 	private ViewHelper viewHelper;
+
 	private int currentPosition;
 
 	@Override
@@ -74,21 +73,12 @@ public abstract class CustomListActivity extends ListActivity {
         
 		sortableAdapter = new SortableAdapter(this, R.layout.spinner_row);
 		
-		selectableItems = new ArrayList<Selectable>();
-        
-		selectableItems.add(new Selectable(
-        		getString(R.string.addToCellar), 
-        		R.drawable.icon, Selectable.ADD_ACTION));
-
-		selectableItems.add(new Selectable(
-        		getString(R.string.removeFromCellar), 
-        		R.drawable.from_cellar, Selectable.REMOVE_ACTION));
-
-		selectableItems.add(new Selectable(
-				getString(R.string.deleteTitle), 
-        		R.drawable.trash, Selectable.DELETE_ACTION));
-		
-		selectableAdapter = new SelectableAdapter(this, R.layout.spinner_row);
+		selectableAdapter = new SelectableAdapter(this, R.layout.spinner_row, getLayoutInflater()){
+			public boolean isAvailableInCellar() {
+				Cursor cursor = (Cursor) getListView().getItemAtPosition(currentPosition);
+				return cursor.getInt(22) > 0;
+			}
+		};
 	}
 	
 	public void addWine(View view) {
@@ -111,19 +101,18 @@ public abstract class CustomListActivity extends ListActivity {
 	}
 	
 	protected void handleLongClick(final int position) {
-		this.currentPosition = position;
+		currentPosition = position;
 		
-		ListView listView = CustomListActivity.this.getListView();
-		Cursor cursor = (Cursor) listView.getItemAtPosition(position);
+		Cursor cursor = (Cursor) getListView().getItemAtPosition(position);
 		
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(CustomListActivity.this);
+		AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
 		alertDialog.setTitle(cursor.getString(1));
 		
 		alertDialog.setSingleChoiceItems( selectableAdapter, 0, new OnClickListener() { 
             @Override 
             public void onClick(DialogInterface dialog, int which) { 
                 dialog.dismiss();
-                select(selectableItems.get(which), position);
+                select(selectableAdapter.getItem(which), position);
             }
 		}); 
 
@@ -132,7 +121,7 @@ public abstract class CustomListActivity extends ListActivity {
 
 	abstract void sort(Sortable sortable);
 	abstract void select(Selectable selectable, int position);
-
+	
 	
 	class SortableAdapter extends ArrayAdapter<Sortable>{
 		
@@ -162,58 +151,4 @@ public abstract class CustomListActivity extends ListActivity {
 		
 	}
 
-	class SelectableAdapter extends ArrayAdapter<Selectable>{
-		public SelectableAdapter(Context context, int textViewResourceId) {
-			super(context, textViewResourceId, selectableItems);
-		}
-		          
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			return getCustomView(position, convertView, parent);
-		}
-
-		@Override
-		public boolean areAllItemsEnabled() {
-	        return false;
-	    }
-
-		@Override
-	    public boolean isEnabled(int position) {
-			Selectable item = getItem(position);
-	    	if(item.getAction() == Selectable.REMOVE_ACTION) {
-	    		Cursor cursor = (Cursor) getListView().getItemAtPosition(currentPosition);
-    			return cursor.getInt(22) > 0;
-	    	}
-	    	
-			return true;
-	    }
-	    
-		public View getCustomView(int position, View convertView, ViewGroup parent) {
-			View row = convertView;
-			
-			if(row == null) {
-				LayoutInflater inflater=getLayoutInflater();
-				row=inflater.inflate(R.layout.spinner_row, parent, false);
-			}
-			
-			Selectable s = selectableItems.get(position);
-			
-			TextView label=(TextView)row.findViewById(R.id.spinner_header);
-			label.setText(s.getHeader());
-			ImageView icon=(ImageView)row.findViewById(R.id.spinner_image);
-			icon.setImageResource(s.getDrawable());
-		    
-			if (s.getAction() == Selectable.REMOVE_ACTION && !isEnabled(position)) {
-				label.setTextColor(Color.GRAY);
-				row.setBackgroundColor(Color.LTGRAY);
-			} else {
-				label.setTextColor(Color.BLACK);
-				row.setBackgroundColor(Color.WHITE);
-			}
-			
-			return row;		    
-		}
-		
-	}
-	
 }

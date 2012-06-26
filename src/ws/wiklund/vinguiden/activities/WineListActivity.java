@@ -2,12 +2,12 @@ package ws.wiklund.vinguiden.activities;
 
 import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.bolaget.SystembolagetParser;
-import ws.wiklund.vinguiden.db.CellarProvider;
 import ws.wiklund.vinguiden.db.DatabaseUpgrader;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
 import ws.wiklund.vinguiden.list.WineListCursorAdapter;
 import ws.wiklund.vinguiden.model.Wine;
 import ws.wiklund.vinguiden.util.AppRater;
+import ws.wiklund.vinguiden.util.GetWineFromCursorTask;
 import ws.wiklund.vinguiden.util.Selectable;
 import ws.wiklund.vinguiden.util.Sortable;
 import ws.wiklund.vinguiden.util.ViewHelper;
@@ -21,13 +21,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,7 +39,6 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class WineListActivity extends CustomListActivity {
 	private static final String PRIVATE_PREF = "vinguiden";
@@ -56,10 +55,18 @@ public class WineListActivity extends CustomListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.winelist);
+
+		initVersions();
+		AppRater.app_launched(this);
 
 		// Bootstrapping
 		// PayPalFactory.init(this.getBaseContext());
+
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			startActivityForResult(new Intent(getApplicationContext(), WineFlowActivity.class), 0);
+		}
+		
+		setContentView(R.layout.winelist);
 
 		ViewHelper viewHelper = new ViewHelper(this);
 
@@ -87,10 +94,6 @@ public class WineListActivity extends CustomListActivity {
 				return true;
 			}
 		});
-
-		initVersions();
-		
-		AppRater.app_launched(this);
 
 	}
 
@@ -155,7 +158,10 @@ public class WineListActivity extends CustomListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		new GetWineFromCursorTask().execute(position);
+		
+		Cursor c = (Cursor) WineListActivity.this.getListAdapter().getItem(position);
+
+		new GetWineFromCursorTask(this).execute(c);
 	}
 
 	@Override
@@ -275,149 +281,11 @@ public class WineListActivity extends CustomListActivity {
 		ListView listView = WineListActivity.this.getListView();
 		final Cursor c = (Cursor) listView.getItemAtPosition(position);
 
-		final int wineId = c.getInt(0);
-		final String name = c.getString(1);
+		selectable.select(this, helper, c.getInt(0), c.getString(1));
 
-		switch (selectable.getAction()) {
-		case Selectable.ADD_ACTION:
-			// TODO create add wine to cellar activity
-			// Step 1, simple only add one bottle to cellar on click
-			ContentValues values = new ContentValues();
-			values.put("wine_id", wineId);
-			values.put("no_bottles", 1);
-			values.put("added_to_cellar", SystemClock.elapsedRealtime());
-			getContentResolver().insert(CellarProvider.CONTENT_URI, values);
-
-			Log.d(WineListActivity.class.getName(), "Added one bottle of "
-					+ name + " to cellar");
-			// Step 2, create activity to be able to add multiple bottles, set
-			// reminder, set location
-
-			notifyDataSetChanged();
-			break;
-		case Selectable.REMOVE_ACTION:
-			// TODO
-			// Step 1, just remove one bottle
-			Cursor c1 = getContentResolver().query(CellarProvider.CONTENT_URI,
-					null, "wine_id = ?", new String[] { String.valueOf(wineId) },
-					null);
-
-			if (c1.moveToFirst()) {
-				int noBottles = c1.getInt(2);
-				if (noBottles == 1) {
-					int rows = getContentResolver().delete(
-							CellarProvider.CONTENT_URI, "_id = ?",
-							new String[] { String.valueOf(c1.getInt(0)) });
-
-					if (rows < 1) {
-						Toast.makeText(WineListActivity.this,
-								getString(R.string.deleteFailed) + " " + name,
-								Toast.LENGTH_LONG).show();
-					} else if (rows > 1) {
-						Log.e(WineListActivity.class.getName(),
-								"Fatal error removed more then one row from cellar");
-					}
-				} else {
-					// TODO add support for this when it is possible to add more
-					// then one bottle per row
-				}
-			}
-
-			// Step 2, create remove wine from cellar dialog if wines has been
-			// added with different dates or on different locations
-
-			notifyDataSetChanged();
-			break;
-		case Selectable.DELETE_ACTION:
-			AlertDialog.Builder alertDialog = new AlertDialog.Builder(
-					WineListActivity.this);
-			
-			alertDialog.setMessage(String.format(getString(R.string.deleteWine), name));
-			alertDialog.setCancelable(false);
-			alertDialog.setPositiveButton(android.R.string.yes,
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int id) {
-							boolean b = helper.deleteWine(wineId);
-
-							if (!b) {
-								Toast.makeText(
-										WineListActivity.this,
-										getString(R.string.deleteFailed) + " "
-												+ name, Toast.LENGTH_LONG)
-										.show();
-							} else {
-								notifyDataSetChanged();
-							}
-						}
-					});
-
-			alertDialog.setNegativeButton(android.R.string.no,
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int id) {
-							// Action for 'NO' Button
-							dialog.cancel();
-						}
-					});
-
-			AlertDialog alert = alertDialog.create();
-
-			// Title for AlertDialog
-			alert.setTitle(getString(R.string.deleteTitle) + " " + name + "?");
-			// Icon for AlertDialog
-			alert.setIcon(R.drawable.icon);
-			alert.show();
-
-			// Return true to consume the click event. In this case the
-			// onListItemClick listener is not called anymore.
-			break;
-		default:
-			break;
-		}
+		notifyDataSetChanged();
 	}
 
-	private class GetWineFromCursorTask extends AsyncTask<Integer, Void, Wine> {
-		private ProgressDialog dialog;
-		private Integer position;
-
-		@Override
-		protected Wine doInBackground(Integer... positions) {
-			this.position = positions[0];
-
-			// Get the item that was clicked
-			Cursor c = (Cursor) WineListActivity.this.getListAdapter().getItem(
-					position);
-
-			return helper.getWineFromCursor(c);
-		}
-
-		@Override
-		protected void onPostExecute(Wine wine) {
-			dialog.hide();
-
-			Intent intent = new Intent(
-					WineListActivity.this.getApplicationContext(),
-					WineTabsActivity.class);
-			intent.putExtra("ws.wiklund.vinguiden.activities.Wine", wine);
-
-			startActivityForResult(intent, 0);
-
-			super.onPostExecute(wine);
-		}
-
-		@Override
-		protected void onPreExecute() {
-			dialog = new ProgressDialog(WineListActivity.this);
-			dialog.setMessage(getString(R.string.wait));
-			dialog.setIndeterminate(true);
-			dialog.setCancelable(false);
-			dialog.show();
-
-			super.onPreExecute();
-		}
-
-	}
 	
 	
 	private class PostUpdateTask extends AsyncTask<Void, Integer, Void> {

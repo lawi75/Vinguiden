@@ -24,81 +24,93 @@
 					android:layout_height="100dp" 
 					android:background="@drawable/icon" />
 		   		
-				<TextView 
-					android:id="@+id/Text_no"
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content"	
-					android:singleLine="true"
-					android:gravity="right"			 
-					android:layout_weight="1" />			 	    		    			
+				<LinearLayout
+					android:orientation="vertical"
+   					android:layout_width="wrap_content"
+   					android:layout_height="wrap_content" >
+
+					<TextView 
+						android:id="@+id/Text_no"
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"	
+						android:singleLine="true"
+						android:gravity="right"			 
+						android:layout_weight="1" 
+						/>			 	    		    			
+						    					
+					<TextView 
+						android:id="@+id/Text_type"
+						android:layout_height="wrap_content"
+						android:layout_width="fill_parent"	
+						android:singleLine="true"
+						android:gravity="right"			 
+						android:layout_weight="1" />			 	    		    
+					
+						
+					<TableLayout 
+						android:layout_width="wrap_content" 
+						android:layout_height="wrap_content" >			
+
+					    <TableRow
+			    			android:layout_height="wrap_content"
+							android:layout_width="wrap_content" >					
+				
+							<ImageView 
+								android:id="@+id/Image_country_thumbUrl"
+								android:layout_width="29dp"
+								android:layout_height="17dp" 
+								android:padding="3dip"/>
+					   		
+							<TextView 
+								android:id="@+id/Text_country"
+								android:layout_height="wrap_content"
+								android:layout_width="fill_parent"
+								android:paddingLeft="10dip"
+								android:singleLine="true"
+								android:layout_weight="1" />			 
+						</TableRow>
+
+					    <TableRow
+						    android:layout_height="wrap_content"
+							android:layout_width="wrap_content" >					
+							<TextView 
+								android:layout_height="wrap_content"
+								android:layout_width="wrap_content"	
+								android:singleLine="true" 
+								android:text="@string/year" />			 
+						    			    
+							<TextView 
+								android:id="@+id/Text_year"
+								android:layout_height="wrap_content"
+								android:layout_width="fill_parent"			 
+								android:paddingLeft="10dip"
+								android:singleLine="true"
+								android:layout_weight="1" />			 
+						</TableRow>					
+				
+						<TableRow
+						    android:layout_height="wrap_content"
+							android:layout_width="wrap_content" >					
+							<TextView 
+								android:layout_height="wrap_content"
+								android:layout_width="wrap_content"	
+								android:singleLine="true" 
+								android:text="@string/strength" />			 
+						    			    
+							<TextView 
+								android:id="@+id/Text_strength"
+								android:layout_height="wrap_content"
+								android:paddingLeft="10dip"
+								android:singleLine="true"
+								android:layout_width="fill_parent"			
+								android:layout_weight="1" />			 
+						</TableRow>					
+					    					    						
+					</TableLayout>
+				</LinearLayout>
 			</TableRow>
 	    
-			<TableRow
-			    android:layout_height="wrap_content"
-				android:layout_width="wrap_content" >					
-				
-				<TextView 
-					android:id="@+id/Text_type"
-					android:layout_height="wrap_content"
-					android:layout_width="fill_parent"	
-					android:singleLine="true"
-					android:layout_span="2" />			 	    		    
-			</TableRow>					
-							
-			<TableRow
-			    android:layout_height="wrap_content"
-				android:layout_width="wrap_content" >					
-				
-				<ImageView 
-					android:id="@+id/Image_country_thumbUrl"
-					android:layout_width="29dp"
-					android:layout_height="17dp" 
-					android:padding="3dip"/>
-		   		
-				<TextView 
-					android:id="@+id/Text_country"
-					android:layout_height="wrap_content"
-					android:layout_width="fill_parent"
-					android:paddingLeft="10dip"
-					android:singleLine="true"
-					android:layout_weight="1" />			 
-			</TableRow>
 						
-			<TableRow
-			    android:layout_height="wrap_content"
-				android:layout_width="wrap_content" >					
-				<TextView 
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content"	
-					android:singleLine="true" 
-					android:text="@string/year" />			 
-			    			    
-				<TextView 
-					android:id="@+id/Text_year"
-					android:layout_height="wrap_content"
-					android:layout_width="fill_parent"			 
-					android:paddingLeft="10dip"
-					android:singleLine="true"
-					android:layout_weight="1" />			 
-			</TableRow>					
-	
-			<TableRow
-			    android:layout_height="wrap_content"
-				android:layout_width="wrap_content" >					
-				<TextView 
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content"	
-					android:singleLine="true" 
-					android:text="@string/strength" />			 
-			    			    
-				<TextView 
-					android:id="@+id/Text_strength"
-					android:layout_height="wrap_content"
-					android:paddingLeft="10dip"
-					android:singleLine="true"
-					android:layout_width="fill_parent"			
-					android:layout_weight="1" />			 
-			</TableRow>					
 	
 			<TableRow
 			    android:layout_height="wrap_content"
@@ -245,7 +257,7 @@
 			android:paddingTop="30dip"
 			ads:adUnitId="a14ef3028f69666"
 			ads:adSize="BANNER"
-			ads:testDevices="TEST_EMULATOR, 7F842430E41B05C0CE78448229ED475D"
+			ads:testDevices="TEST_EMULATOR, 00B6F3EEBADC5F6DE037CCCE5149940B"
 			ads:loadAdOnCreate="true"/>	
 							 
 	</LinearLayout>

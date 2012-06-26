@@ -105,7 +105,8 @@
     <string name="version20msg">Div buggfixar, en första enkel version av vinkällare samt statistik över dina viner.</string>
     <string name="version201">Version 2.0.1</string>
     <string name="version201msg">Div buggfixar</string>
-    
+    <string name="version21">Version 2.1</string>
+    <string name="version21msg">Bättre stöd för landskaps vyn samt mindre buggfixar vid sökande av viner</string>
     
     
     <!-- App rating -->

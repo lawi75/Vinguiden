@@ -11,6 +11,7 @@ import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.bolaget.SystembolagetParser;
 import ws.wiklund.vinguiden.model.WineType;
 import ws.wiklund.vinguiden.util.BitmapManager;
+import ws.wiklund.vinguiden.util.WineViewHolder;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
@@ -40,28 +41,28 @@ public class WineListCursorAdapter extends SimpleCursorAdapter implements Sectio
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {		
-		ViewHolder holder;
+		WineViewHolder holder;
 		
 		if (convertView == null) {  
 			convertView = inflator.inflate(R.layout.item, null);
 			
-			 TextView titleView = (TextView) convertView.findViewById(R.id.itemTitle);  
-	         TextView textView = (TextView) convertView.findViewById(R.id.itemText);  
-	         TextView typeView = (TextView) convertView.findViewById(R.id.itemType);  
-	         ImageView imageView = (ImageView) convertView.findViewById(R.id.itemImage);
-	         RatingBar rating = (RatingBar) convertView.findViewById(R.id.itemRatingBar);
+			TextView titleView = (TextView) convertView.findViewById(R.id.itemTitle);  
+	        TextView textView = (TextView) convertView.findViewById(R.id.itemText);  
+	        TextView typeView = (TextView) convertView.findViewById(R.id.itemType);  
+	        ImageView imageView = (ImageView) convertView.findViewById(R.id.itemImage);
+	        RatingBar rating = (RatingBar) convertView.findViewById(R.id.itemRatingBar);
 
 	         
-	         holder = new ViewHolder();  
-	         holder.titleView = titleView;  
-	         holder.textView = textView;  
-	         holder.imageView = imageView;
-	         holder.rating = rating;
-	         holder.typeView = typeView;
+	        holder = new WineViewHolder();  
+	        holder.titleView = titleView;  
+	        holder.textView = textView;  
+	        holder.imageView = imageView;
+	        holder.rating = rating;
+	        holder.typeView = typeView;
 	         
-	         convertView.setTag(holder);
+	        convertView.setTag(holder);
 		} else {
-			holder = (ViewHolder) convertView.getTag(); 
+			holder = (WineViewHolder) convertView.getTag(); 
 		}
 		
 		Cursor c = getCursor();
@@ -101,14 +102,6 @@ public class WineListCursorAdapter extends SimpleCursorAdapter implements Sectio
 		return convertView;
 	}
 	
-    private static class ViewHolder {  
-        public RatingBar rating;
-		public ImageView imageView;  
-        public TextView titleView;  
-        public TextView textView; 
-        public TextView typeView;
-    }
-
 	@Override
 	public int getPositionForSection(int section) {
 		return alphaIndexer.get(sections[section]);

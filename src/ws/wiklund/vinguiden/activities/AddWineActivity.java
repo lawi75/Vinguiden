@@ -41,8 +41,9 @@ public class AddWineActivity extends BaseActivity {
         searchStr.setOnKeyListener(new OnKeyListener() {
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if(keyCode == KeyEvent.KEYCODE_ENTER) {
+				if(keyCode == KeyEvent.KEYCODE_ENTER  && event.getAction() == 0) {
 					searchWine(v);
+					return true;
 				}
 				
 				return false;

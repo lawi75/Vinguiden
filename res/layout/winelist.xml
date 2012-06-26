@@ -14,7 +14,7 @@
 		android:layout_height="wrap_content"
 		ads:adUnitId="a14ef3028f69666"
 		ads:adSize="BANNER"
-		ads:testDevices="TEST_EMULATOR, 00B6F3EEBADC5F6DE037CCCE5149940B"
+		ads:testDevices="TEST_EMULATOR, 7F842430E41B05C0CE78448229ED475D"
 		ads:loadAdOnCreate="true"/>
 
 	<ListView 
@@ -34,7 +34,7 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		ads:adUnitId="a14ef3028f69666"
-		ads:testDevices="TEST_EMULATOR, 00B6F3EEBADC5F6DE037CCCE5149940B"
+		ads:testDevices="TEST_EMULATOR, 7F842430E41B05C0CE78448229ED475D"
 		ads:adSize="BANNER"
 		ads:loadAdOnCreate="true"/>
 
