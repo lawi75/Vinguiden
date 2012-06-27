@@ -125,6 +125,7 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 			+ "WHERE "
 			+ "wine._id = ?";
 	
+	/*
 	private static final String CELLAR_COLUMNS = 
 			"cellar._id, "
 			+ "cellar.wine_id, "
@@ -136,6 +137,7 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 			+ "cellar.notification_id "
 		+ "FROM "
 			+ CELLAR_TABLE + " ";
+	*/
 	
 	public static final String SQL_SELECT_ALL_WINES_INCLUDING_NO_IN_CELLAR = "SELECT "
 			+ WINE_COLUMNS + ", "
@@ -264,7 +266,6 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 				}
 			}
 			
-			db.endTransaction();
 			return b; 
 		} finally {
 			db.endTransaction();
@@ -285,6 +286,7 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 	public Wine addWine(Wine wine) {
 		if (!exists(wine)) {
 			SQLiteDatabase db = getWritableDatabase();
+			db.beginTransaction();
 
 			try {
 				ContentValues values = convertWineToValues(wine);
@@ -317,7 +319,10 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 				
 				//Update wine with the newly created id
 				wine.setId((int) id);
+				
+				db.setTransactionSuccessful();
 			} finally {
+				db.endTransaction();
 				db.close();
 				close();
 			}
@@ -422,6 +427,7 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 	 */
 	private boolean update(Wine wine) {
 		SQLiteDatabase db = getWritableDatabase();
+		db.beginTransaction();
 
 		try {
 			Country country = wine.getCountry();
@@ -446,8 +452,10 @@ public class WineDatabaseHelper extends SQLiteOpenHelper {
 						
 			db.update(WINE_TABLE, values, "_id=?", new String[]{String.valueOf(wine.getId())});
 
+			db.setTransactionSuccessful();
 			return true;		
 		} finally {
+			db.endTransaction();
 			db.close();
 			close();
 		}

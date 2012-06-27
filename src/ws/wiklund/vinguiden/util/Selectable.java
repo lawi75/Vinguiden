@@ -54,6 +54,7 @@ public class Selectable {
 				// Step 2, create activity to be able to add multiple bottles, set
 				// reminder, set location
 	
+				((Notifyable)context).notifyDataSetChanged();
 				break;
 			case Selectable.REMOVE_ACTION:
 				// TODO
@@ -72,6 +73,8 @@ public class Selectable {
 						} else if (rows > 1) {
 							Log.e(Selectable.class.getName(), "Fatal error removed more then one row from cellar");
 						}
+						
+						((Notifyable)context).notifyDataSetChanged();
 					} else {
 						// TODO add support for this when it is possible to add more
 						// then one bottle per row
@@ -89,19 +92,21 @@ public class Selectable {
 				alertDialog.setPositiveButton(android.R.string.yes,
 						new DialogInterface.OnClickListener() {
 							@Override
-							public void onClick(DialogInterface dialog, int id) {
+							public void onClick(DialogInterface dialog, int id1) {
 								boolean b = helper.deleteWine(id);
 	
 								if (!b) {
 									Toast.makeText(context, context.getString(R.string.deleteFailed) + " " + name, Toast.LENGTH_LONG).show();
 								}
+								
+								((Notifyable)context).notifyDataSetChanged();
 							}
 						});
 	
 				alertDialog.setNegativeButton(android.R.string.no,
 						new DialogInterface.OnClickListener() {
 							@Override
-							public void onClick(DialogInterface dialog, int id) {
+							public void onClick(DialogInterface dialog, int id1) {
 								// Action for 'NO' Button
 								dialog.cancel();
 							}

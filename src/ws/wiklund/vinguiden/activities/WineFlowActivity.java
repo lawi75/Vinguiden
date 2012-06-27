@@ -8,6 +8,7 @@ import ws.wiklund.vinguiden.model.WineType;
 import ws.wiklund.vinguiden.util.BitmapManager;
 import ws.wiklund.vinguiden.util.CoverFlow;
 import ws.wiklund.vinguiden.util.GetWineFromCursorTask;
+import ws.wiklund.vinguiden.util.Notifyable;
 import ws.wiklund.vinguiden.util.SelectableAdapter;
 import ws.wiklund.vinguiden.util.ViewHelper;
 import ws.wiklund.vinguiden.util.WineViewHolder;
@@ -37,7 +38,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-public class WineFlowActivity extends Activity {
+public class WineFlowActivity extends Activity implements Notifyable {
 	private CoverFlowAdapter adapter;
 	private SelectableAdapter selectableAdapter;
 	private WineDatabaseHelper helper;
@@ -119,13 +120,10 @@ public class WineFlowActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menuStats:
-			startActivityForResult(
-					new Intent(WineFlowActivity.this.getApplicationContext(), StatsActivity.class), 0);
+			startActivityForResult(new Intent(WineFlowActivity.this.getApplicationContext(), StatsActivity.class), 0);
 			break;
 		case R.id.menuAbout:
-			startActivityForResult(
-					new Intent(WineFlowActivity.this.getApplicationContext(), AboutActivity.class), 0);
-
+			startActivityForResult(new Intent(WineFlowActivity.this.getApplicationContext(), AboutActivity.class), 0);
 			break;
 		}
 
@@ -159,14 +157,13 @@ public class WineFlowActivity extends Activity {
             public void onClick(DialogInterface dialog, int which) { 
                 dialog.dismiss();
                 selectableAdapter.getItem(which).select(WineFlowActivity.this, helper, w.getId(), w.getName());
-                notifyDataSetChanged();
             }
 		}); 
 
 		alertDialog.show(); 				
 	}	
 
-	private void notifyDataSetChanged() {
+	public void notifyDataSetChanged() {
 		int bottles = helper.getNoBottlesInCellar();
 		// Update title with no wines in cellar
 		if (bottles > 0) {

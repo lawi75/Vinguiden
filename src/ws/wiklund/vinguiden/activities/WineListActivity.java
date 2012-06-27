@@ -8,13 +8,13 @@ import ws.wiklund.vinguiden.list.WineListCursorAdapter;
 import ws.wiklund.vinguiden.model.Wine;
 import ws.wiklund.vinguiden.util.AppRater;
 import ws.wiklund.vinguiden.util.GetWineFromCursorTask;
+import ws.wiklund.vinguiden.util.Notifyable;
 import ws.wiklund.vinguiden.util.Selectable;
 import ws.wiklund.vinguiden.util.Sortable;
 import ws.wiklund.vinguiden.util.ViewHelper;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,7 +40,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-public class WineListActivity extends CustomListActivity {
+public class WineListActivity extends CustomListActivity implements Notifyable {
 	private static final String PRIVATE_PREF = "vinguiden";
 	private static final String VERSION_KEY = "version_number";
 
@@ -169,7 +169,7 @@ public class WineListActivity extends CustomListActivity {
 		notifyDataSetChanged();
 	}
 
-	private void notifyDataSetChanged() {
+	public void notifyDataSetChanged() {
 		if (!db.isOpen() || adapter.getCount() == 0) {
 			stopManagingCursor(cursor);
 			cursor = getNewCursor(currentSortColumn);
@@ -183,8 +183,7 @@ public class WineListActivity extends CustomListActivity {
 		int bottles = helper.getNoBottlesInCellar();
 		// Update title with no wines in cellar
 		if (bottles > 0) {
-			TextView view = (TextView) WineListActivity.this
-					.findViewById(R.id.title);
+			TextView view = (TextView) WineListActivity.this.findViewById(R.id.title);
 
 			String text = view.getText().toString();
 			if (text.contains("(")) {
@@ -282,11 +281,8 @@ public class WineListActivity extends CustomListActivity {
 		final Cursor c = (Cursor) listView.getItemAtPosition(position);
 
 		selectable.select(this, helper, c.getInt(0), c.getString(1));
-
-		notifyDataSetChanged();
 	}
 
-	
 	
 	private class PostUpdateTask extends AsyncTask<Void, Integer, Void> {
 		private ProgressDialog dialog;
@@ -316,9 +312,8 @@ public class WineListActivity extends CustomListActivity {
 						Log.d(DatabaseUpgrader.class.getName(), "Updating price for: " + wine);
 
 						if(wine != null && wine.hasPrice()) {
-							ContentValues values = new ContentValues();
-							values.put("price", wine.getPrice());
-							getDatabase().update(WineDatabaseHelper.WINE_TABLE, values, "_id=?", new String[] {String.valueOf(c.getInt(0))});
+							wine.setId(c.getInt(0));
+							helper.updateWine(wine);
 							Log.d(DatabaseUpgrader.class.getName(), "Price updated");
 						}
 					} catch (Exception e) {
@@ -371,7 +366,7 @@ public class WineListActivity extends CustomListActivity {
 		
 		private SQLiteDatabase getDatabase() {
 			if(innerDB == null || !innerDB.isOpen()) {
-				innerDB = helper.getWritableDatabase();
+				innerDB = helper.getReadableDatabase();
 			}
 			
 			return innerDB;

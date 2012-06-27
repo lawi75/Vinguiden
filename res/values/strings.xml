@@ -107,6 +107,8 @@
     <string name="version201msg">Div buggfixar</string>
     <string name="version21">Version 2.1</string>
     <string name="version21msg">Bättre stöd för landskaps vyn samt mindre buggfixar vid sökande av viner</string>
+    <string name="version211">Version 2.1.1</string>
+    <string name="version211msg">Mindre buggfixar gällande ta bort viner ur listan</string>
     
     
     <!-- App rating -->
