@@ -1,15 +1,14 @@
 package ws.wiklund.vinguiden.activities;
 
-import java.net.URLEncoder;
-import java.util.Iterator;
 import java.util.List;
 
+import ws.wiklund.guides.activities.BaseActivity;
+import ws.wiklund.guides.model.Beverage;
+import ws.wiklund.guides.util.DownloadImageTask;
+import ws.wiklund.guides.util.ViewHelper;
 import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
-import ws.wiklund.vinguiden.model.Wine;
-import ws.wiklund.vinguiden.model.WineType;
-import ws.wiklund.vinguiden.util.DownloadImageTask;
-import ws.wiklund.vinguiden.util.ViewHelper;
+import ws.wiklund.vinguiden.util.WineTypes;
 import android.os.Bundle;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
@@ -19,7 +18,6 @@ import android.widget.TextView;
 
 public class StatsActivity extends BaseActivity {
 	private final String urlGoogleChart = "http://chart.apis.google.com/chart";
-	private final String urlp3Api = "?chf=bg,s,65432100&cht=p3&chs=400x150&chl=";
 	
 	private WineDatabaseHelper helper;
 	
@@ -31,13 +29,13 @@ public class StatsActivity extends BaseActivity {
         
         helper = new WineDatabaseHelper(this);
         
-        List<Wine> wines = helper.getAllWines();
+        List<Beverage> beverages = helper.getAllBeverages();
         
         //TODO History of wines
         
 		TextView total = (TextView) findViewById(R.id.total);
 		total.setText(String.format(getString(R.string.statsNow), 
-				new Object[]{wines.size(), ViewHelper.getDecimalStringFromNumber(helper.getAverageRating())}));
+				new Object[]{beverages.size(), ViewHelper.getDecimalStringFromNumber(helper.getAverageRating())}));
 		
 		createChart();		
 		
@@ -51,24 +49,24 @@ public class StatsActivity extends BaseActivity {
 		
 		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
-		for(Wine wine : wines) {
-			if(wine.hasBottlesInCellar()) {
+		for(Beverage beverage : beverages) {
+			if(beverage.hasBottlesInCellar()) {
 				TableRow row = new TableRow(this);
 				row.setLayoutParams(params);
 				
 				TextView amountView = new TextView(this);
 				amountView.setPadding(0, 0, 10, 0);
-				amountView.setText(String.format(getString(R.string.amount), wine.getBottlesInCellar()));
+				amountView.setText(String.format(getString(R.string.amount), beverage.getBottlesInCellar()));
 				row.addView(amountView);
 
 				TextView yearView = new TextView(this);
 				yearView.setPadding(0, 0, 10, 0);
-				yearView.setText(String.valueOf(wine.getYear()));
+				yearView.setText(String.valueOf(beverage.getYear()));
 				row.addView(yearView);
 
 				TextView nameView = new TextView(this);
 				nameView.setPadding(0, 0, 10, 0);
-				nameView.setText(wine.getName());
+				nameView.setText(beverage.getName());
 				row.addView(nameView);
 
 				table.addView(row);
@@ -78,33 +76,7 @@ public class StatsActivity extends BaseActivity {
     }
     
     private void createChart() {
-		StringBuilder urlBuilder = new StringBuilder();
-		urlBuilder.append(urlp3Api);
-
-		List<WineType> types = helper.getAllAvailableWineTypes();
-
-		StringBuilder values = new StringBuilder();
-		
-		Iterator<WineType> i = types.iterator();
-		while(i.hasNext()) {
-			WineType type = i.next();
-			
-			int amount = helper.getAllWinesForType(type);
-						
-			urlBuilder.append(URLEncoder.encode(type.toString())).append("(").append(amount).append(")");
-			values.append(amount);
-			
-			if(i.hasNext()) {
-				urlBuilder.append("|");
-				values.append(",");
-			} else {
-				urlBuilder.append("&chd=t:");
-			}				
-		}
-		
-		urlBuilder.append(values.toString());
-
-		new DownloadImageTask((ImageView)findViewById(R.id.pie), urlGoogleChart, 400, 150).execute(urlBuilder.toString());
+		new DownloadImageTask((ImageView)findViewById(R.id.pie), urlGoogleChart, 400, 150).execute(ViewHelper.buildChartUrl(helper, new WineTypes().getAllBeverageTypes().iterator()));
 	}
 
 }

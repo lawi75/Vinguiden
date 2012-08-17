@@ -3,10 +3,12 @@ package ws.wiklund.vinguiden.activities;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
+import ws.wiklund.guides.activities.BaseActivity;
+import ws.wiklund.guides.bolaget.SystembolagetParser;
+import ws.wiklund.guides.model.Beverage;
 import ws.wiklund.vinguiden.R;
-import ws.wiklund.vinguiden.bolaget.SystembolagetParser;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
-import ws.wiklund.vinguiden.model.Wine;
+import ws.wiklund.vinguiden.util.WineTypes;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -30,11 +32,6 @@ public class AddWineActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.addwine);
         
-        if(!isLightVersion()) {
-    		findViewById(R.id.adView).setVisibility(View.GONE);
-    		findViewById(R.id.adView1).setVisibility(View.GONE);
-        }
-
         helper = new WineDatabaseHelper(this);
         searchStr = (EditText)findViewById(R.id.EditNo);
         
@@ -65,13 +62,18 @@ public class AddWineActivity extends BaseActivity {
 		search(searchStr.getText().toString());
     }
     
-    public void search(String no) {
+    private void search(String no) {
     	if(isValidNo(no)) {
     		new DownloadWineTask().execute(no);
     	}
     }
 	
-	private boolean isValidNo(String no) {
+	public void addWineManually(View view) {    	
+		Intent intent = new Intent(AddWineActivity.this.getApplicationContext(), ModifyWineActivity.class);
+    	startActivityForResult(intent, 0);
+    }
+
+    private boolean isValidNo(String no) {
 		if(no != null && no.length() > 0 && Pattern.matches("^\\d*$", no)) {
 			try {
 				if(!exists(no)) {
@@ -91,17 +93,17 @@ public class AddWineActivity extends BaseActivity {
 	}
 
 	private boolean exists(String no) throws NumberFormatException {
-		return helper.getWineIdFromNo(Integer.valueOf(no)) != -1;
+		return helper.getBeverageIdFromNo(Integer.valueOf(no)) != -1;
 	}
 
 
-	private class DownloadWineTask extends AsyncTask<String, Void, Wine> {
+	private class DownloadWineTask extends AsyncTask<String, Void, Beverage> {
 		private String no;
 		
 		private String errorMsg;
 
 		@Override
-		protected Wine doInBackground(String... no) {
+		protected Beverage doInBackground(String... no) {
 			this.no = no[0];
 
 	        try {
@@ -109,7 +111,7 @@ public class AddWineActivity extends BaseActivity {
 		        	Log.w(AddWineActivity.class.getName(), "Failed to get info for wine,  no is null");		        	
 		        	errorMsg = getString(R.string.genericParseError);
 				} else {
-					return SystembolagetParser.parseResponse(this.no);
+					return SystembolagetParser.parseResponse(this.no, new WineTypes());
 				}
 			} catch (IOException e) {
 	        	Log.w(AddWineActivity.class.getName(), "Failed to get info for wine with no: " + this.no, e);
@@ -120,11 +122,11 @@ public class AddWineActivity extends BaseActivity {
 		}
 
 		@Override
-		protected void onPostExecute(Wine wine) {
+		protected void onPostExecute(Beverage beverage) {
 			Intent intent = new Intent(AddWineActivity.this.getApplicationContext(), ModifyWineActivity.class);
 
-			if (wine != null) {
-				intent.putExtra("ws.wiklund.vinguiden.activities.Wine", wine);
+			if (beverage != null) {
+				intent.putExtra("ws.wiklund.guides.model.Beverage", beverage);
 		    	startActivityForResult(intent, 0);
 			} else {
 				Toast.makeText(getApplicationContext(), errorMsg == null ? String.format(getString(R.string.missingNoError), this.no) : errorMsg, Toast.LENGTH_SHORT).show();
@@ -132,12 +134,12 @@ public class AddWineActivity extends BaseActivity {
 				dialog.dismiss();
 			}
 			
-			super.onPostExecute(wine);
+			super.onPostExecute(beverage);
 		}
 
 		@Override
 		protected void onPreExecute() {
-			dialog = new ProgressDialog(AddWineActivity.this);
+			dialog = new ProgressDialog(AddWineActivity.this, R.style.CustomDialog);
 			dialog.setMessage("Vänligen vänta...");
 			dialog.setIndeterminate(true);
 			dialog.setCancelable(false);

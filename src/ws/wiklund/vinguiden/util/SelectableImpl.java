@@ -1,27 +1,24 @@
 package ws.wiklund.vinguiden.util;
 
+import ws.wiklund.guides.util.Notifyable;
+import ws.wiklund.guides.util.Selectable;
 import ws.wiklund.vinguiden.R;
-import ws.wiklund.vinguiden.db.CellarProvider;
+import ws.wiklund.vinguiden.db.WineCellarProvider;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
-public class Selectable {
-	public static final int DELETE_ACTION = 3234;
-	public static final int ADD_ACTION = 5435;
-	public static final int REMOVE_ACTION = 1554;
-	
+public class SelectableImpl implements Selectable {
 	private String header;
 	private int drawable;
 	private int action;
 
-	public Selectable(String header, int drawable, int action) {
+	public SelectableImpl(String header, int drawable, int action) {
 		this.header = header;
 		this.drawable = drawable;
 		this.action = action;
@@ -45,12 +42,12 @@ public class Selectable {
 				// TODO create add wine to cellar activity
 				// Step 1, simple only add one bottle to cellar on click
 				ContentValues values = new ContentValues();
-				values.put("wine_id", id);
+				values.put("beverage_id", id);
 				values.put("no_bottles", 1);
-				values.put("added_to_cellar", SystemClock.elapsedRealtime());
-				context.getContentResolver().insert(CellarProvider.CONTENT_URI, values);
+				values.put("added_to_cellar", System.currentTimeMillis());
+				context.getContentResolver().insert(WineCellarProvider.CONTENT_URI, values);
 	
-				Log.d(Selectable.class.getName(), "Added one bottle of " + name + " to cellar");
+				Log.d(SelectableImpl.class.getName(), "Added one bottle of " + name + " to cellar");
 				// Step 2, create activity to be able to add multiple bottles, set
 				// reminder, set location
 	
@@ -59,19 +56,19 @@ public class Selectable {
 			case Selectable.REMOVE_ACTION:
 				// TODO
 				// Step 1, just remove one bottle
-				Cursor c1 = context.getContentResolver().query(CellarProvider.CONTENT_URI,
-						null, "wine_id = ?", new String[] { String.valueOf(id) },
+				Cursor c1 = context.getContentResolver().query(WineCellarProvider.CONTENT_URI,
+						null, "beverage_id = ?", new String[] { String.valueOf(id) },
 						null);
 	
 				if (c1.moveToFirst()) {
 					int noBottles = c1.getInt(2);
 					if (noBottles == 1) {
-						int rows = context.getContentResolver().delete(CellarProvider.CONTENT_URI, "_id = ?", new String[] { String.valueOf(c1.getInt(0)) });
+						int rows = context.getContentResolver().delete(WineCellarProvider.CONTENT_URI, "_id = ?", new String[] { String.valueOf(c1.getInt(0)) });
 	
 						if (rows < 1) {
 							Toast.makeText(context, context.getString(R.string.deleteFailed) + " " + name, Toast.LENGTH_LONG).show();
 						} else if (rows > 1) {
-							Log.e(Selectable.class.getName(), "Fatal error removed more then one row from cellar");
+							Log.e(SelectableImpl.class.getName(), "Fatal error removed more then one row from cellar");
 						}
 						
 						((Notifyable)context).notifyDataSetChanged();
@@ -81,7 +78,7 @@ public class Selectable {
 					}
 				}
 	
-				// Step 2, create remove wine from cellar dialog if wines has been
+				// Step 2, create remove beverage from cellar dialog if beverages has been
 				// added with different dates or on different locations
 				break;
 			case Selectable.DELETE_ACTION:
@@ -93,7 +90,7 @@ public class Selectable {
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int id1) {
-								boolean b = helper.deleteWine(id);
+								boolean b = helper.deleteBeverage(id);
 	
 								if (!b) {
 									Toast.makeText(context, context.getString(R.string.deleteFailed) + " " + name, Toast.LENGTH_LONG).show();

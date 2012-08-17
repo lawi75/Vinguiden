@@ -1,16 +1,16 @@
 package ws.wiklund.vinguiden.util;
 
+import ws.wiklund.guides.model.Beverage;
 import ws.wiklund.vinguiden.R;
-import ws.wiklund.vinguiden.activities.WineTabsActivity;
+import ws.wiklund.vinguiden.activities.WineActivity;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
-import ws.wiklund.vinguiden.model.Wine;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 
-public class GetWineFromCursorTask extends AsyncTask<Cursor, Void, Wine> {
+public class GetWineFromCursorTask extends AsyncTask<Cursor, Void, Beverage> {
 	private ProgressDialog dialog;
 	private Activity activity;
 
@@ -19,20 +19,20 @@ public class GetWineFromCursorTask extends AsyncTask<Cursor, Void, Wine> {
 	}
 
 	@Override
-	protected Wine doInBackground(Cursor... cursors) {
-		return new WineDatabaseHelper(activity).getWineFromCursor(cursors[0]);
+	protected Beverage doInBackground(Cursor... cursors) {
+		return new WineDatabaseHelper(activity).getBeverageFromCursor(cursors[0]);
 	}
 
 	@Override
-	protected void onPostExecute(Wine wine) {
+	protected void onPostExecute(Beverage bevarage) {
 		dialog.hide();
 
-		Intent intent = new Intent(activity, WineTabsActivity.class);
-		intent.putExtra("ws.wiklund.vinguiden.activities.Wine", wine);
+		Intent intent = new Intent(activity, WineActivity.class);
+		intent.putExtra("ws.wiklund.guides.model.Beverage", bevarage);
 
 		activity.startActivityForResult(intent, 0);
 
-		super.onPostExecute(wine);
+		super.onPostExecute(bevarage);
 	}
 
 	@Override

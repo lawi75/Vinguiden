@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ws.wiklund.vinguiden.R;
-import ws.wiklund.vinguiden.util.Selectable;
-import ws.wiklund.vinguiden.util.SelectableAdapter;
-import ws.wiklund.vinguiden.util.Sortable;
-import ws.wiklund.vinguiden.util.ViewHelper;
+import ws.wiklund.vinguiden.util.SelectableImpl;
+import ws.wiklund.vinguiden.util.WineTypes;
+import ws.wiklund.guides.util.Selectable;
+import ws.wiklund.guides.util.SelectableAdapter;
+import ws.wiklund.guides.util.Sortable;
+import ws.wiklund.guides.util.ViewHelper;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
@@ -30,7 +32,8 @@ public abstract class CustomListActivity extends ListActivity {
 	private SortableAdapter sortableAdapter;
 	private SelectableAdapter selectableAdapter;
 
-	private ViewHelper viewHelper;
+	protected ViewHelper viewHelper;
+	protected WineTypes wineTypes;
 
 	private int currentPosition;
 
@@ -41,7 +44,20 @@ public abstract class CustomListActivity extends ListActivity {
 		setContentView(R.layout.winelist);
 		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.window_title);
 		
-		viewHelper = new ViewHelper(this);
+		wineTypes = new WineTypes();
+		viewHelper = new ViewHelper();
+
+		if (!viewHelper.isLightVersion(Integer.valueOf(getString(R.string.version_type)))) {
+			View ad = findViewById(R.id.adView);
+			if(ad != null) {
+				ad.setVisibility(View.GONE);
+			}
+			
+			View ad1 = findViewById(R.id.adView1);
+			if(ad1 != null) {
+				ad1.setVisibility(View.GONE);
+			}
+		}
 
 		sortableItems = new ArrayList<Sortable>();
         
@@ -49,21 +65,21 @@ public abstract class CustomListActivity extends ListActivity {
         		getString(R.string.sortOnName), 
         		getString(R.string.sortOnNameSub), 
         		R.drawable.descending, 
-        		"wine.name asc"));
+        		"beverage.name asc"));
 
         sortableItems.add(new Sortable(
         		getString(R.string.sortOnRank), 
         		getString(R.string.sortOnRankSub), 
         		R.drawable.rating, 
-        		"wine.rating desc"));
+        		"beverage.rating desc"));
 
         sortableItems.add(new Sortable(
         		getString(R.string.sortOnType), 
         		getString(R.string.sortOnTypeSub), 
         		R.drawable.icon, 
-        		"wine.type asc"));
+        		"beverage.type asc"));
         
-        if(!viewHelper.isLightVersion()) {
+        if(!viewHelper.isLightVersion(Integer.valueOf(getString(R.string.version_type)))) {
             sortableItems.add(new Sortable(
             		getString(R.string.sortOnCategory), 
             		getString(R.string.sortOnCategorySub), 
@@ -79,6 +95,10 @@ public abstract class CustomListActivity extends ListActivity {
 				return cursor.getInt(22) > 0;
 			}
 		};
+		
+		selectableAdapter.add(new SelectableImpl(getString(R.string.addToCellar), R.drawable.icon, Selectable.ADD_ACTION));
+		selectableAdapter.add(new SelectableImpl(getString(R.string.removeFromCellar), R.drawable.from_cellar, Selectable.REMOVE_ACTION));
+		selectableAdapter.add(new SelectableImpl(getString(R.string.deleteTitle), R.drawable.trash, Selectable.DELETE_ACTION));
 	}
 	
 	public void addWine(View view) {

@@ -1,18 +1,23 @@
 package ws.wiklund.vinguiden.activities;
 
+import java.io.File;
+
+import ws.wiklund.guides.activities.BaseActivity;
+import ws.wiklund.guides.bolaget.SystembolagetParser;
+import ws.wiklund.guides.model.Beverage;
+import ws.wiklund.guides.util.BitmapManager;
+import ws.wiklund.guides.util.CoverFlow;
+import ws.wiklund.guides.util.ExportDatabaseCSVTask;
+import ws.wiklund.guides.util.Notifyable;
+import ws.wiklund.guides.util.Selectable;
+import ws.wiklund.guides.util.SelectableAdapter;
+import ws.wiklund.guides.util.ViewHelper;
+import ws.wiklund.guides.util.ViewHolder;
 import ws.wiklund.vinguiden.R;
-import ws.wiklund.vinguiden.bolaget.SystembolagetParser;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
-import ws.wiklund.vinguiden.model.Wine;
-import ws.wiklund.vinguiden.model.WineType;
-import ws.wiklund.vinguiden.util.BitmapManager;
-import ws.wiklund.vinguiden.util.CoverFlow;
 import ws.wiklund.vinguiden.util.GetWineFromCursorTask;
-import ws.wiklund.vinguiden.util.Notifyable;
-import ws.wiklund.vinguiden.util.SelectableAdapter;
-import ws.wiklund.vinguiden.util.ViewHelper;
-import ws.wiklund.vinguiden.util.WineViewHolder;
-import android.app.Activity;
+import ws.wiklund.vinguiden.util.SelectableImpl;
+import ws.wiklund.vinguiden.util.WineTypes;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -38,11 +43,12 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-public class WineFlowActivity extends Activity implements Notifyable {
+public class WineFlowActivity extends BaseActivity implements Notifyable {
 	private CoverFlowAdapter adapter;
 	private SelectableAdapter selectableAdapter;
 	private WineDatabaseHelper helper;
 	private int currentPosition;
+	private WineTypes wineTypes;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -51,53 +57,52 @@ public class WineFlowActivity extends Activity implements Notifyable {
 
 		if (getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
 			startActivityForResult(new Intent(getApplicationContext(), WineListActivity.class), 0);
-		}
-		
-		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
-		setContentView(R.layout.wineflow);
-		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.window_title);
+		} else {
+			requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+			setContentView(R.layout.wineflow);
+			getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.window_title);
+	
+			wineTypes = new WineTypes();
 
-		ViewHelper viewHelper = new ViewHelper(this);
-
-		if (!viewHelper.isLightVersion()) {
-			findViewById(R.id.adView).setVisibility(View.GONE);
-			findViewById(R.id.adView1).setVisibility(View.GONE);
-		}
-
-		helper = new WineDatabaseHelper(this);			
-		
-		final CoverFlow flow = (CoverFlow) findViewById(R.id.coverFlow);
-		adapter = new CoverFlowAdapter(this);
-
-		flow.setAdapter(adapter);
-
-		flow.setSpacing(-25);
-		flow.setSelection(adapter.getOptimalSelection(), true);
-		flow.setAnimationDuration(1000);
-		
-		flow.setOnItemLongClickListener(new OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-				handleLongClick(position);
-				return true;
-			}
-		});
-		
-		flow.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				new GetWineFromCursorTask(WineFlowActivity.this).execute(adapter.getItem(position));
-			}
+			helper = new WineDatabaseHelper(this);			
 			
-		});
-		
-		selectableAdapter = new SelectableAdapter(this, R.layout.spinner_row, getLayoutInflater()){
-			public boolean isAvailableInCellar() {
-				final Wine w = helper.getWineFromCursor(adapter.getItem(currentPosition));
-				return w.hasBottlesInCellar();
-			}
-		};
+			final CoverFlow flow = (CoverFlow) findViewById(R.id.coverFlow);
+			adapter = new CoverFlowAdapter(this);
+	
+			flow.setAdapter(adapter);
+	
+			flow.setSpacing(-25);
+			flow.setSelection(adapter.getOptimalSelection(), true);
+			flow.setAnimationDuration(1000);
+			
+			flow.setOnItemLongClickListener(new OnItemLongClickListener() {
+				@Override
+				public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+					handleLongClick(position);
+					return true;
+				}
+			});
+			
+			flow.setOnItemClickListener(new OnItemClickListener() {
+	
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					new GetWineFromCursorTask(WineFlowActivity.this).execute(adapter.getItem(position));
+				}
+				
+			});
+			
+			selectableAdapter = new SelectableAdapter(this, R.layout.spinner_row, getLayoutInflater()){
+				public boolean isAvailableInCellar() {
+					final Beverage b = helper.getBeverageFromCursor(adapter.getItem(currentPosition));
+					return b.hasBottlesInCellar();
+				}
+			};
+			
+			selectableAdapter.add(new SelectableImpl(getString(R.string.addToCellar), R.drawable.icon, Selectable.ADD_ACTION));
+			selectableAdapter.add(new SelectableImpl(getString(R.string.removeFromCellar), R.drawable.from_cellar, Selectable.REMOVE_ACTION));
+			selectableAdapter.add(new SelectableImpl(getString(R.string.deleteTitle), R.drawable.trash, Selectable.DELETE_ACTION));
+		}
 	}
 	
 	@Override
@@ -105,7 +110,7 @@ public class WineFlowActivity extends Activity implements Notifyable {
 		super.onCreateOptionsMenu(menu);
 
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.wine_list_menu, menu);
+		inflater.inflate(R.menu.beverage_list_menu, menu);
 
 		return true;
 	}
@@ -121,6 +126,29 @@ public class WineFlowActivity extends Activity implements Notifyable {
 		switch (item.getItemId()) {
 		case R.id.menuStats:
 			startActivityForResult(new Intent(WineFlowActivity.this.getApplicationContext(), StatsActivity.class), 0);
+			break;
+		case R.id.menuExport:
+			final AlertDialog alertDialog = new AlertDialog.Builder(WineFlowActivity.this).create();
+			alertDialog.setTitle(getString(R.string.export));
+			
+			final File exportFile = new File(ViewHelper.getRoot(), "export_guide.csv");
+			alertDialog.setMessage(String.format(getString(R.string.export_message), new Object[]{exportFile.getAbsolutePath()}));
+			
+			alertDialog.setButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+			       new ExportDatabaseCSVTask(WineFlowActivity.this, helper, exportFile, adapter.getCount(), wineTypes).execute();
+				} 
+			});
+			
+			alertDialog.setButton2(getString(android.R.string.no), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					alertDialog.cancel();
+				} 
+			});
+
+			alertDialog.setCancelable(true);
+			alertDialog.setIcon(R.drawable.export);
+			alertDialog.show();
 			break;
 		case R.id.menuAbout:
 			startActivityForResult(new Intent(WineFlowActivity.this.getApplicationContext(), AboutActivity.class), 0);
@@ -149,14 +177,14 @@ public class WineFlowActivity extends Activity implements Notifyable {
 		
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
 		
-		final Wine w = helper.getWineFromCursor(adapter.getItem(position));
-		alertDialog.setTitle(w != null ? w.getName() : "");
+		final Beverage b = helper.getBeverageFromCursor(adapter.getItem(position));
+		alertDialog.setTitle(b != null ? b.getName() : "");
 		
 		alertDialog.setSingleChoiceItems( selectableAdapter, 0, new OnClickListener() { 
             @Override 
             public void onClick(DialogInterface dialog, int which) { 
                 dialog.dismiss();
-                selectableAdapter.getItem(which).select(WineFlowActivity.this, helper, w.getId(), w.getName());
+                ((SelectableImpl) selectableAdapter.getItem(which)).select(WineFlowActivity.this, helper, b.getId(), b.getName());
             }
 		}); 
 
@@ -238,7 +266,7 @@ public class WineFlowActivity extends Activity implements Notifyable {
 		}
 
 		public View getView(int position, View convertView, ViewGroup parent) {
-			WineViewHolder holder;
+			ViewHolder holder;
 			
 			if (convertView == null) {  
 				convertView = inflator.inflate(R.layout.coveritem, null);
@@ -250,7 +278,7 @@ public class WineFlowActivity extends Activity implements Notifyable {
 		        RatingBar rating = (RatingBar) convertView.findViewById(R.id.itemRatingBar);
 
 		         
-		        holder = new WineViewHolder();  
+		        holder = new ViewHolder();  
 		        holder.titleView = titleView;  
 		        holder.textView = textView;  
 		        holder.imageView = imageView;
@@ -259,7 +287,7 @@ public class WineFlowActivity extends Activity implements Notifyable {
 		         
 		        convertView.setTag(holder);
 			} else {
-				holder = (WineViewHolder) convertView.getTag(); 
+				holder = (ViewHolder) convertView.getTag(); 
 			}
 			
 			Cursor c = getItem(position);
@@ -273,14 +301,20 @@ public class WineFlowActivity extends Activity implements Notifyable {
 				}
 						
 				holder.titleView.setText(name.toString());
-				holder.typeView.setText(WineType.fromId(c.getInt(3)).toString());
+				holder.typeView.setText(wineTypes.findTypeFromId(c.getInt(3)).toString());
 				
 				int year = c.getInt(8); 
 				holder.textView.setText(c.getString(6) + " " + (year != -1 ? year : ""));
-				String url = SystembolagetParser.BASE_URL + c.getString(4);
 				holder.rating.setRating(c.getFloat(16));
-				holder.imageView.setTag(url);
-				BitmapManager.INSTANCE.loadBitmap(url, holder.imageView, 50, 100);
+
+				String u = c.getString(4);			
+				if (u != null) {
+					String url = u.startsWith("/") ? SystembolagetParser.BASE_URL + u : u;
+					holder.imageView.setTag(url);
+					BitmapManager.INSTANCE.loadBitmap(url, holder.imageView, 50, 100);
+				} else {
+					holder.imageView.setImageResource(R.drawable.icon);
+				}
 			}
 			
 			return convertView;
@@ -289,7 +323,7 @@ public class WineFlowActivity extends Activity implements Notifyable {
 		private Cursor getNewOrReuseCursor() {
 			if (db == null || !db.isOpen()) {
 				db = helper.getReadableDatabase();
-				cursor = db.rawQuery(WineDatabaseHelper.SQL_SELECT_ALL_WINES_INCLUDING_NO_IN_CELLAR, null);
+				cursor = db.rawQuery(WineDatabaseHelper.SQL_SELECT_ALL_BEVERAGES_INCLUDING_NO_IN_CELLAR, null);
 			}
 			
 			return cursor;

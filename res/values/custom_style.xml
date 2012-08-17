@@ -1,10 +1,24 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <style name="CustomWindowTitleBackground">
         <item name="android:background">#323331</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
- 
-    <style name="CustomTheme" parent="android:Theme">
+    
+	<style name="CustomWindowTitle" parent="android:TextAppearance.WindowTitle">
+        <item name="android:textColor">@android:color/white</item>
+	</style>    
+    	
+	<style name="CustomTheme" parent="android:Theme">
         <item name="android:windowTitleSize">35dip</item>
         <item name="android:windowTitleBackgroundStyle">@style/CustomWindowTitleBackground</item>
+        <item name="android:windowTitleStyle">@style/CustomWindowTitle</item>
+        <item name="android:textColor">@android:color/black</item>
     </style>
+    
+	<style name="CustomDialog" parent="android:Theme.Dialog">
+		<item name="android:textColor">@android:color/white</item>
+		<item name="android:background">@android:color/black</item>
+		<item name="android:windowBackground">@android:color/transparent</item>
+	</style>	
+    
 </resources>

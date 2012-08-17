@@ -5,23 +5,23 @@
 	android:id="@+id/TableLayoutAddWine" 
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-	android:stretchColumns="0">
+	android:stretchColumns="0"
+	android:background="@android:color/white">
 
 	<TableRow>
-	<com.google.ads.AdView 
-		android:id="@+id/adView"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		ads:adUnitId="a14ef3028f69666"
-		ads:adSize="BANNER"
-		ads:testDevices="TEST_EMULATOR, 7F842430E41B05C0CE78448229ED475D"
-		ads:loadAdOnCreate="true"
-		android:layout_span="2" />			 	    		    
-	    	    
+		<com.google.ads.AdView 
+			android:id="@+id/adView"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			ads:adUnitId="a14ef3028f69666"
+			ads:adSize="BANNER"
+			ads:testDevices="TEST_EMULATOR, 7F842430E41B05C0CE78448229ED475D"
+			ads:loadAdOnCreate="true"
+			android:layout_span="2" />			 	    		    	    	    
 	</TableRow>
-    
+	
 	<TableRow
-		android:id="@+id/TableRowAddWine"
+		android:id="@+id/TableRowAddWineByNo"
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content">
 		
@@ -44,6 +44,21 @@
 			android:onClick="searchWine" />
 	</TableRow>
 	
+	<TableRow
+		android:id="@+id/TableRowAddWineManually"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+		
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+	        android:layout_marginTop="5dip"
+	        android:layout_marginRight="10dip"
+		    android:drawableRight="@drawable/next"
+		    android:text="@string/manually_add_beverage"
+			android:onClick="addWineManually" />
+	</TableRow>
+	    	
 	<TableRow>
 	<com.google.ads.AdView 
 		android:id="@+id/adView1"

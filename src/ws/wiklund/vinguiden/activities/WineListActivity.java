@@ -1,17 +1,20 @@
 package ws.wiklund.vinguiden.activities;
 
+import java.io.File;
+
+import ws.wiklund.guides.bolaget.SystembolagetParser;
+import ws.wiklund.guides.list.BeverageListCursorAdapter;
+import ws.wiklund.guides.model.Beverage;
+import ws.wiklund.guides.util.AppRater;
+import ws.wiklund.guides.util.ExportDatabaseCSVTask;
+import ws.wiklund.guides.util.Notifyable;
+import ws.wiklund.guides.util.Selectable;
+import ws.wiklund.guides.util.Sortable;
+import ws.wiklund.guides.util.ViewHelper;
 import ws.wiklund.vinguiden.R;
-import ws.wiklund.vinguiden.bolaget.SystembolagetParser;
-import ws.wiklund.vinguiden.db.DatabaseUpgrader;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
-import ws.wiklund.vinguiden.list.WineListCursorAdapter;
-import ws.wiklund.vinguiden.model.Wine;
-import ws.wiklund.vinguiden.util.AppRater;
 import ws.wiklund.vinguiden.util.GetWineFromCursorTask;
-import ws.wiklund.vinguiden.util.Notifyable;
-import ws.wiklund.vinguiden.util.Selectable;
-import ws.wiklund.vinguiden.util.Sortable;
-import ws.wiklund.vinguiden.util.ViewHelper;
+import ws.wiklund.vinguiden.util.SelectableImpl;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
@@ -49,7 +52,7 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 	private Cursor cursor;
 	private SimpleCursorAdapter adapter;
 
-	private String currentSortColumn = "wine.name asc";
+	private String currentSortColumn = "beverage.name asc";
 
 	/** Called when the activity is first created. */
 	@Override
@@ -57,44 +60,35 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 		super.onCreate(savedInstanceState);
 
 		initVersions();
-		AppRater.app_launched(this);
+		AppRater.app_launched(this, getString(R.string.app_name), "market://details?id=ws.wiklund.vinguiden");
 
 		// Bootstrapping
 		// PayPalFactory.init(this.getBaseContext());
-
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			startActivityForResult(new Intent(getApplicationContext(), WineFlowActivity.class), 0);
+		} else {		
+			setContentView(R.layout.winelist);
+	
+			helper = new WineDatabaseHelper(this);
+			cursor = getNewCursor(currentSortColumn);
+	
+			startManagingCursor(cursor);
+	
+			// Now create a new list adapter bound to the cursor.
+			adapter = new BeverageListCursorAdapter(this, cursor, wineTypes);
+	
+			// Bind to our new adapter.
+			setListAdapter(adapter);
+	
+			ListView list = getListView();
+			list.setOnItemLongClickListener(new OnItemLongClickListener() {
+				@Override
+				public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+					handleLongClick(position);
+					return true;
+				}
+			});
 		}
-		
-		setContentView(R.layout.winelist);
-
-		ViewHelper viewHelper = new ViewHelper(this);
-
-		if (!viewHelper.isLightVersion()) {
-			findViewById(R.id.adView).setVisibility(View.GONE);
-			findViewById(R.id.adView1).setVisibility(View.GONE);
-		}
-
-		helper = new WineDatabaseHelper(this);
-		cursor = getNewCursor(currentSortColumn);
-
-		startManagingCursor(cursor);
-
-		// Now create a new list adapter bound to the cursor.
-		adapter = new WineListCursorAdapter(this, cursor);
-
-		// Bind to our new adapter.
-		setListAdapter(adapter);
-
-		ListView list = getListView();
-		list.setOnItemLongClickListener(new OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-				handleLongClick(position);
-				return true;
-			}
-		});
-
 	}
 
 	private void initVersions() {
@@ -151,7 +145,7 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 	private Cursor getNewCursor(String sortColumn) {
 		db = helper.getReadableDatabase();
 		return db.rawQuery(
-				WineDatabaseHelper.SQL_SELECT_ALL_WINES_INCLUDING_NO_IN_CELLAR
+				WineDatabaseHelper.SQL_SELECT_ALL_BEVERAGES_INCLUDING_NO_IN_CELLAR
 						+ " ORDER BY " + sortColumn, null);
 	}
 
@@ -170,6 +164,10 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 	}
 
 	public void notifyDataSetChanged() {
+		if(db == null || adapter == null) {
+			return;
+		}
+		
 		if (!db.isOpen() || adapter.getCount() == 0) {
 			stopManagingCursor(cursor);
 			cursor = getNewCursor(currentSortColumn);
@@ -198,8 +196,13 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 	protected void onDestroy() {
 		stopManagingCursor(cursor);
 
-		adapter.getCursor().close();
-
+		if (adapter != null) {
+			Cursor c = adapter.getCursor();
+			if(c != null) {
+				c.close();
+			}
+		}
+		
 		if (cursor != null) {
 			cursor.close();
 		}
@@ -228,7 +231,7 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 		super.onCreateOptionsMenu(menu);
 
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.wine_list_menu, menu);
+		inflater.inflate(R.menu.beverage_list_menu, menu);
 
 		return true;
 	}
@@ -244,17 +247,33 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menuStats:
-			startActivityForResult(
-					new Intent(
-							WineListActivity.this.getApplicationContext(),
-							StatsActivity.class), 0);
+			startActivityForResult(new Intent(WineListActivity.this.getApplicationContext(),StatsActivity.class), 0);
+			break;
+		case R.id.menuExport:
+			final AlertDialog alertDialog = new AlertDialog.Builder(WineListActivity.this).create();
+			alertDialog.setTitle(getString(R.string.export));
+			
+			final File exportFile = new File(ViewHelper.getRoot(), "export_guide.csv");
+			alertDialog.setMessage(String.format(getString(R.string.export_message), new Object[]{exportFile.getAbsolutePath()}));
+			
+			alertDialog.setButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+			       new ExportDatabaseCSVTask(WineListActivity.this, helper, exportFile, WineListActivity.this.getListAdapter().getCount(), wineTypes).execute();
+				} 
+			});
+			
+			alertDialog.setButton2(getString(android.R.string.no), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					alertDialog.cancel();
+				} 
+			});
+
+			alertDialog.setCancelable(true);
+			alertDialog.setIcon(R.drawable.export);
+			alertDialog.show();
 			break;
 		case R.id.menuAbout:
-			startActivityForResult(
-					new Intent(
-							WineListActivity.this.getApplicationContext(),
-							AboutActivity.class), 0);
-
+			startActivityForResult(new Intent(WineListActivity.this.getApplicationContext(),AboutActivity.class), 0);
 			break;
 		}
 
@@ -280,7 +299,7 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 		ListView listView = WineListActivity.this.getListView();
 		final Cursor c = (Cursor) listView.getItemAtPosition(position);
 
-		selectable.select(this, helper, c.getInt(0), c.getString(1));
+		((SelectableImpl) selectable).select(this, helper, c.getInt(0), c.getString(1));
 	}
 
 	
@@ -292,7 +311,7 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-    			Log.d(DatabaseUpgrader.class.getName(), "current progress [" + dialog.getProgress() + "]");
+    			Log.d(WineListActivity.class.getName(), "current progress [" + dialog.getProgress() + "]");
     			dialog.incrementProgressBy(1);
             }
         };
@@ -302,22 +321,22 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 			Cursor c = null;
 			
 			try {
-				c = getDatabase().rawQuery("SELECT _id, no FROM wine WHERE price IS NULL", null);
-				Log.d(DatabaseUpgrader.class.getName(), "Will set default price for all wines with data from Systembolaget");
-				Log.d(DatabaseUpgrader.class.getName(), "Will update [" + c.getCount() + "] wines with price");
+				c = getDatabase().rawQuery("SELECT _id, no FROM beverage WHERE price IS NULL", null);
+				Log.d(WineListActivity.class.getName(), "Will set default price for all wines with data from Systembolaget");
+				Log.d(WineListActivity.class.getName(), "Will update [" + c.getCount() + "] wines with price");
 
 				while(c.moveToNext()) {
 					try {
-						Wine wine = SystembolagetParser.parseResponse(c.getString(1));
-						Log.d(DatabaseUpgrader.class.getName(), "Updating price for: " + wine);
+						Beverage beverage = SystembolagetParser.parseResponse(c.getString(1), wineTypes);
+						Log.d(WineListActivity.class.getName(), "Updating price for: " + beverage);
 
-						if(wine != null && wine.hasPrice()) {
-							wine.setId(c.getInt(0));
-							helper.updateWine(wine);
-							Log.d(DatabaseUpgrader.class.getName(), "Price updated");
+						if(beverage != null && beverage.hasPrice()) {
+							beverage.setId(c.getInt(0));
+							helper.updateBeverage(beverage);
+							Log.d(WineListActivity.class.getName(), "Price updated");
 						}
 					} catch (Exception e) {
-			        	Log.w(DatabaseUpgrader.class.getName(), "Failed to get info for wine with no: " + c.getString(0), e);
+			        	Log.w(WineListActivity.class.getName(), "Failed to get info for wine with no: " + c.getString(0), e);
 					}
 
 					publishProgress(0);
@@ -343,7 +362,7 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 			Cursor c = null;
 			int count = 0;
 			try {
-				c = getDatabase().rawQuery("SELECT _id, no FROM wine WHERE price IS NULL", null);
+				c = getDatabase().rawQuery("SELECT _id, no FROM beverage WHERE price IS NULL", null);
 				count = c.getCount();
 			} finally {
 				if (c != null) {
@@ -353,7 +372,7 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 				innerDB.close();
 			}
 			
-			dialog = new ProgressDialog(WineListActivity.this);
+			dialog = new ProgressDialog(WineListActivity.this, R.style.CustomDialog);
 			dialog.setMessage(getString(R.string.upgrading));
 			dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			dialog.setCancelable(false);

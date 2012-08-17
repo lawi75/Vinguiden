@@ -2,6 +2,7 @@ package ws.wiklund.vinguiden.activities;
 
 import java.io.InputStream;
 
+import ws.wiklund.guides.activities.BaseActivity;
 import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
 import android.content.pm.PackageInfo;

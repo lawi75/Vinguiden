@@ -1,5 +1,6 @@
 package ws.wiklund.vinguiden.activities;
 
+import ws.wiklund.guides.activities.BaseActivity;
 import ws.wiklund.vinguiden.R;
 import android.os.Bundle;
 import android.view.Window;

@@ -3,49 +3,53 @@ package ws.wiklund.vinguiden.activities;
 import java.util.ArrayList;
 import java.util.Date;
 
+import ws.wiklund.guides.activities.BaseActivity;
+import ws.wiklund.guides.activities.FullAdActivity;
+import ws.wiklund.guides.model.Beverage;
+import ws.wiklund.guides.model.BeverageType;
+import ws.wiklund.guides.model.Category;
+import ws.wiklund.guides.model.Country;
+import ws.wiklund.guides.model.Producer;
+import ws.wiklund.guides.model.Provider;
+import ws.wiklund.guides.util.ViewHelper;
 import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
-import ws.wiklund.vinguiden.model.Category;
-import ws.wiklund.vinguiden.model.Country;
-import ws.wiklund.vinguiden.model.Producer;
-import ws.wiklund.vinguiden.model.Provider;
-import ws.wiklund.vinguiden.model.Wine;
-import ws.wiklund.vinguiden.model.WineType;
-import ws.wiklund.vinguiden.util.ViewHelper;
+import ws.wiklund.vinguiden.util.WineTypes;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 public class ModifyWineActivity extends BaseActivity {
-	private Wine wine;
-	private ViewHelper viewHelper;
+	private Beverage beverage;
+	private WineTypes wineTypes;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.modifywine);
 
-        if(!isLightVersion()) {
-    		findViewById(R.id.adView).setVisibility(View.GONE);
-        	findViewById(R.id.adView1).setVisibility(View.GONE);        	
-        }
+		wineTypes = new WineTypes();
+        beverage = (Beverage) getIntent().getSerializableExtra("ws.wiklund.guides.model.Beverage");
 
-        wine = (Wine) getIntent().getSerializableExtra("ws.wiklund.vinguiden.activities.Wine");
+		Log.d(ModifyWineActivity.class.getName(), "Wine: " + (beverage != null ? beverage.toString() : null));
 
-		Log.d(ModifyWineActivity.class.getName(), "Wine: " + (wine != null ? wine.toString() : null));
-
-		viewHelper = new ViewHelper(this);
-
-		if (wine != null) {
-			setTitle(wine.getName());
+		populateSpinnersAndCountryView();
+		
+		if (beverage != null) {
+			setTitle(beverage.getName());
 			populateUI();
 		}
 	}
@@ -55,7 +59,7 @@ public class ModifyWineActivity extends BaseActivity {
 		super.onCreateOptionsMenu(menu);
 		
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.modify_wine_menu, menu);
+		inflater.inflate(R.menu.modify_beverage_menu, menu);
 		
 		return true;
 	}
@@ -63,11 +67,16 @@ public class ModifyWineActivity extends BaseActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
-			case R.id.menuSaveWine:
-		    	Wine w = getWineFromUI();
-			   	WineDatabaseHelper helper = new WineDatabaseHelper(ModifyWineActivity.this.getApplicationContext());
-		    	helper.addWine(w);
-		    	showWineList();					
+			case R.id.menuSaveBeverage:
+				Beverage b = getBeverageFromUI();
+				if(ViewHelper.validateBeverage(this, b)) {
+					WineDatabaseHelper helper = new WineDatabaseHelper(ModifyWineActivity.this.getApplicationContext());
+
+					saveBeverage(helper, b);
+
+			    	showWineList();					
+				}
+
 				return true;
 			case R.id.menuCancel:
 		    	showWineList();
@@ -77,91 +86,139 @@ public class ModifyWineActivity extends BaseActivity {
 		return false;
 	}	
 	
-    private void populateUI() {
-    	viewHelper.setThumbFromUrl(findViewById(android.R.id.content), wine.getThumb());
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		//Must be called after super or else the image will not be loaded
+		if (bitmap != null) {
+			bitmap = Bitmap.createScaledBitmap(bitmap, 50, 100, true);
+			ImageView imageView = (ImageView) (findViewById(android.R.id.content).findViewById(R.id.Image_thumbUrl));
+			imageView.setImageBitmap(bitmap);
+		}
+	}
+
+	public void changePicture(View view) {
+		Uri outputFileUri = Uri.fromFile(getTempFile());
+		
+		Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE );		
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+		startActivityForResult(intent, REQUEST_FROM_CAMERA);
+	}
+
+	private void populateUI() {
+    	viewHelper.setThumbFromUrl((ImageView) (findViewById(android.R.id.content).findViewById(R.id.Image_thumbUrl)), beverage.getThumb());
 		TextView no = (TextView) findViewById(R.id.Text_no);
-		no.setText(String.valueOf(wine.getNo()));
+		no.setText(String.valueOf(beverage.getNo()));
 		
 		EditText name = (EditText) findViewById(R.id.Edit_name);
-		ViewHelper.setText(name, wine.getName());
+		ViewHelper.setText(name, beverage.getName());
 		
-		Spinner type = (Spinner) findViewById(R.id.Spinner_type);
-		populateAndSetTypeSpinner(type, wine.getType());
+		setTypeSpinner(wineTypes.findTypeFromId(beverage.getBeverageTypeId()));
 		
-		Country c = wine.getCountry();
+		Country c = beverage.getCountry();
 		if (c != null) {
-			viewHelper.setCountryThumbFromUrl(findViewById(android.R.id.content), c);
-			EditText country = (EditText) findViewById(R.id.Edit_country);
+			viewHelper.setCountryThumbFromUrl((ImageView) (findViewById(android.R.id.content).findViewById(R.id.Image_country_thumbUrl)), c);
+			AutoCompleteTextView country = (AutoCompleteTextView) findViewById(R.id.Edit_country);
 			ViewHelper.setText(country, c.getName());
 		}
 		
-		Spinner year = (Spinner) findViewById(R.id.Spinner_year);
-		populateAndSetYearSpinner(year, wine.getYear());
+		setYearSpinner(beverage.getYear());
 		
-		Producer p = wine.getProducer();
+		Producer p = beverage.getProducer();
 		if (p != null) {
 			EditText producer = (EditText) findViewById(R.id.Edit_producer);
 			ViewHelper.setText(producer, p.getName());
 		}
 		
-		Spinner strength = (Spinner) findViewById(R.id.Spinner_strength);
-		populateAndSetStrengthSpinner(strength, wine.getStrength());
+		setStrengthSpinner(beverage.getStrength());
 		
 		EditText price = (EditText) findViewById(R.id.Edit_price);
-		ViewHelper.setText(price, String.valueOf(wine.getPrice()));
+		ViewHelper.setText(price, String.valueOf(beverage.getPrice()));
 
 		EditText usage = (EditText) findViewById(R.id.Edit_usage);
-		ViewHelper.setText(usage, wine.getUsage());
+		ViewHelper.setText(usage, beverage.getUsage());
 		
 		EditText taste = (EditText) findViewById(R.id.Edit_taste);
-		ViewHelper.setText(taste, wine.getTaste());
+		ViewHelper.setText(taste, beverage.getTaste());
 		
-		Spinner category = (Spinner) findViewById(R.id.Spinner_category);
 		if(!isLightVersion()) {
-			populateAndSetCategorySpinner(category, wine.getCategory());
-		} else {
-			TextView tv = (TextView) findViewById(R.id.Text_category);
-			
-			tv.setVisibility(View.GONE); 
-			category.setVisibility(View.GONE); 
+			setCategorySpinner(beverage.getCategory());
 		}
 
-		Provider p1 = wine.getProvider();
+		Provider p1 = beverage.getProvider();
 		if (p1 != null) {
 			EditText provider = (EditText) findViewById(R.id.Edit_provider);
 			ViewHelper.setText(provider, p1.getName());
 		}
 		
 		TextView added = (TextView) findViewById(R.id.Text_added);
-		added.setText(ViewHelper.getDateAsString((wine.getAdded() != null ? wine.getAdded() : new Date())));
+		added.setText(ViewHelper.getDateAsString((beverage.getAdded() != null ? beverage.getAdded() : new Date())));
 	}
 
-	private void populateAndSetCategorySpinner(Spinner categorySpinner, Category category) {
-		ArrayAdapter<Category> adapter = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<Category>(getCategories()));
-		categorySpinner.setAdapter(adapter);
+	private void populateSpinnersAndCountryView() {
+		AutoCompleteTextView country = (AutoCompleteTextView) findViewById(R.id.Edit_country);
+		addAdaptertoCountryView(country, new WineDatabaseHelper(this));
 		
-		categorySpinner.setSelection(adapter.getPosition(category));
-	}
-
-	private void populateAndSetStrengthSpinner(Spinner strengthSpinner, double strength) {
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, ViewHelper.getStrengths());
-		strengthSpinner.setAdapter(adapter);
+		Spinner type = (Spinner) findViewById(R.id.Spinner_type);
+		ArrayAdapter<BeverageType> typeAdapter = new ArrayAdapter<BeverageType>(this, android.R.layout.simple_spinner_dropdown_item, wineTypes.getAllBeverageTypes());
+		type.setAdapter(typeAdapter);
 		
-		strengthSpinner.setSelection(adapter.getPosition(ViewHelper.getDecimalStringFromNumber(strength) + " %"));
+		Spinner year = (Spinner) findViewById(R.id.Spinner_year);
+		ArrayAdapter<Integer> yearAdapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_dropdown_item, getYears());
+		year.setAdapter(yearAdapter);
+
+		Spinner strength = (Spinner) findViewById(R.id.Spinner_strength);
+		ArrayAdapter<String> strengthAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, ViewHelper.getStrengths());
+		strength.setAdapter(strengthAdapter);
+
+		Spinner categorySpinner = (Spinner) findViewById(R.id.Spinner_category);
+		if(!isLightVersion()) {
+			ArrayAdapter<Category> adapter = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<Category>(getCategories()));
+			categorySpinner.setAdapter(adapter);
+		} else {
+			TextView tv = (TextView) findViewById(R.id.Text_category);
+			tv.setVisibility(View.GONE); 
+			categorySpinner.setVisibility(View.GONE); 
+		}
 	}
 
-	private void populateAndSetTypeSpinner(Spinner typeSpinner, WineType type) {
-		ArrayAdapter<WineType> adapter = new ArrayAdapter<WineType>(this, android.R.layout.simple_spinner_dropdown_item, getTypes());
-		typeSpinner.setAdapter(adapter);
+    private void setCategorySpinner(Category category) {
+		Spinner categorySpinner = (Spinner) findViewById(R.id.Spinner_category);
 
-		typeSpinner.setSelection(adapter.getPosition(type));
+    	if (category != null) {
+			@SuppressWarnings("unchecked")
+			ArrayAdapter<Category> adapter = (ArrayAdapter<Category>) categorySpinner.getAdapter();
+			categorySpinner.setSelection(adapter.getPosition(category));
+		}
 	}
 
-	private void populateAndSetYearSpinner(Spinner yearSpinner, int year) {
-		ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_dropdown_item, getYears());
-		yearSpinner.setAdapter(adapter);
-		
+	private void setStrengthSpinner(double strength) {
+		Spinner strengthSpinner = (Spinner) findViewById(R.id.Spinner_strength);
+
+		if (strength > 0) {
+			@SuppressWarnings("unchecked")
+			ArrayAdapter<String> adapter = (ArrayAdapter<String>) strengthSpinner.getAdapter();
+			strengthSpinner.setSelection(adapter.getPosition(ViewHelper.getDecimalStringFromNumber(strength) + " %"));
+		}
+	}
+
+	private void setTypeSpinner(BeverageType type) {
+		Spinner typeSpinner = (Spinner) findViewById(R.id.Spinner_type);
+
+		if (type != null) {
+			@SuppressWarnings("unchecked")
+			ArrayAdapter<BeverageType> adapter = (ArrayAdapter<BeverageType>) typeSpinner.getAdapter();
+			typeSpinner.setSelection(adapter.getPosition(type));
+		}
+	}
+
+	private void setYearSpinner(int year) {
+		Spinner yearSpinner = (Spinner) findViewById(R.id.Spinner_year);
+
 		if(year >= 1900 && year <= getCurrentYear()) {
+			@SuppressWarnings("unchecked")
+			ArrayAdapter<Integer> adapter = (ArrayAdapter<Integer>) yearSpinner.getAdapter();
 			yearSpinner.setSelection(adapter.getPosition(year));
 		}
 	}
@@ -186,9 +243,9 @@ public class ModifyWineActivity extends BaseActivity {
     	finish();
 	}
 
-    private Wine getWineFromUI() {
+    private Beverage getBeverageFromUI() {
     	String name = ((EditText) findViewById(R.id.Edit_name)).getText().toString();		
-		WineType type = (WineType) ((Spinner) findViewById(R.id.Spinner_type)).getSelectedItem();
+    	BeverageType type = (BeverageType) ((Spinner) findViewById(R.id.Spinner_type)).getSelectedItem();
 		String country = ((EditText) findViewById(R.id.Edit_country)).getText().toString();
 		
 		int	year = (Integer) ((Spinner) findViewById(R.id.Spinner_year)).getSelectedItem();
@@ -199,61 +256,62 @@ public class ModifyWineActivity extends BaseActivity {
 		String usage = ((EditText) findViewById(R.id.Edit_usage)).getText().toString();
 		String taste = ((EditText) findViewById(R.id.Edit_taste)).getText().toString();
 		String provider = ((EditText) findViewById(R.id.Edit_provider)).getText().toString();
-
-		if(wine == null) {
-			wine = new Wine();
+		String comment = ((EditText) findViewById(R.id.Edit_comment)).getText().toString();
+		
+		if(beverage == null) {
+			beverage = new Beverage();
 
 			String noStr = ((TextView) findViewById(R.id.Text_no)).getText().toString();
 			if (noStr.length() > 0) {
-				wine.setNo(Integer.valueOf(noStr));
+				beverage.setNo(Integer.valueOf(noStr));
 			}
     	}
 		
-		wine.setName(name);
-		wine.setType(type);		
-		wine.setYear(year);
-		wine.setStrength(ViewHelper.getDoubleFromDecimalString(strength));
+		beverage.setName(name);
+		beverage.setBeverageTypeId(type.getId());		
+		beverage.setYear(year);
+		beverage.setStrength(ViewHelper.getDoubleFromDecimalString(strength));
 		
 		if (price.length() > 0) {
-			wine.setPrice(ViewHelper.getDoubleFromDecimalString(price));
+			beverage.setPrice(ViewHelper.getDoubleFromDecimalString(price));
 		}
 		
-		wine.setUsage(usage);
-		wine.setTaste(taste);
-		
+		beverage.setUsage(usage);
+		beverage.setTaste(taste);
+		beverage.setComment(comment);
 		updateCountry(country);
 		updateProducer(producer);
 		updateProvider(provider);
 
-		return wine;
+		return beverage;
 	}
 
 	private void updateCountry(String country) {
-		if(wine != null && country.length() > 0) {
-			Country c = wine.getCountry();
+		if(beverage != null && country.length() > 0) {
+			Country c = beverage.getCountry();
 			
 			if(c == null || (!c.getName().equals(country))) {
-				wine.setCountry(new Country(country, null));
+				beverage.setCountry(new Country(country, null));
 			}
 		}
 	}
 
 	private void updateProducer(String producer) {
-		if(wine != null && producer.length() > 0) {
-			Producer p = wine.getProducer();
+		if(beverage != null && producer.length() > 0) {
+			Producer p = beverage.getProducer();
 			
 			if(p == null || (!p.getName().equals(producer))) {
-				wine.setProducer(new Producer(producer));
+				beverage.setProducer(new Producer(producer));
 			}
 		}
 	}
 
 	private void updateProvider(String provider) {
-		if(wine != null && provider.length() > 0) {
-			Producer p = wine.getProducer();
+		if(beverage != null && provider.length() > 0) {
+			Producer p = beverage.getProducer();
 			
 			if(p == null || (!p.getName().equals(provider))) {
-				wine.setProvider(new Provider(provider));
+				beverage.setProvider(new Provider(provider));
 			}
 		}
 	}
@@ -262,6 +320,6 @@ public class ModifyWineActivity extends BaseActivity {
 		String s = (String) ((Spinner) findViewById(R.id.Spinner_strength)).getSelectedItem();
 		return s.substring(0, s.indexOf(" "));
 	}
-        
+
 }
 

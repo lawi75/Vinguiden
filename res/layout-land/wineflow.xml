@@ -17,7 +17,7 @@
 		ads:testDevices="TEST_EMULATOR, 7F842430E41B05C0CE78448229ED475D"
 		ads:loadAdOnCreate="true"/>
 
-	<ws.wiklund.vinguiden.util.CoverFlow 
+	<ws.wiklund.guides.util.CoverFlow 
 	    android:id="@+id/coverFlow" 
 	    android:layout_width="fill_parent"
 		android:layout_height="wrap_content" />

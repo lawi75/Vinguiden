@@ -1,64 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android" 
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:padding="10dp"
-    android:orientation="vertical" >
+	android:layout_height="fill_parent"
+	android:paddingLeft="10dip">
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/version211"
-        android:textStyle="bold"/>
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:padding="10dp"
+	    android:orientation="vertical" >
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/version211msg" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/version21"
-        android:textStyle="bold"/>
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/version21msg" />
-    
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/version201"
-        android:textStyle="bold"/>
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/version201msg" />
-    
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/version20"
-        android:textStyle="bold"/>
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/version20msg" />
-    
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textStyle="bold"
-        android:text="@string/version110" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/version110msg" />
-    
-</LinearLayout>
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/version22"
+	        android:textColor="@android:color/white"
+	        android:textStyle="bold"/>
+	
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:textColor="@android:color/white"
+	        android:text="@string/version22msg" />
+	    
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/version211"
+	        android:textColor="@android:color/white"
+	        android:textStyle="bold"/>
+	
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:textColor="@android:color/white"
+	        android:text="@string/version211msg" />
+	
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/version21"
+	        android:textColor="@android:color/white"
+	        android:textStyle="bold"/>
+	
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:textColor="@android:color/white"
+	        android:text="@string/version21msg" />
+	    
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/version201"
+	        android:textColor="@android:color/white"
+	        android:textStyle="bold"/>
+	
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:textColor="@android:color/white"
+	        android:text="@string/version201msg" />
+	    
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/version20"
+	        android:textColor="@android:color/white"
+	        android:textStyle="bold"/>
+	
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:textColor="@android:color/white"
+	        android:text="@string/version20msg" />
+	    
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="10dp"
+	        android:textColor="@android:color/white"
+	        android:textStyle="bold"
+	        android:text="@string/version110" />
+	
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:textColor="@android:color/white"
+	        android:text="@string/version110msg" />
+	</LinearLayout>
+</ScrollView>    
