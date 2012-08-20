@@ -17,8 +17,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 public class StatsActivity extends BaseActivity {
-	private final String urlGoogleChart = "http://chart.apis.google.com/chart";
-	
+	private final static String urlGoogleChart = "http://chart.apis.google.com/chart";
+
 	private WineDatabaseHelper helper;
 	
 	/** Called when the activity is first created. */
@@ -31,18 +31,16 @@ public class StatsActivity extends BaseActivity {
         
         List<Beverage> beverages = helper.getAllBeverages();
         
-        //TODO History of wines
+        //TODO History of beers
         
 		TextView total = (TextView) findViewById(R.id.total);
-		total.setText(String.format(getString(R.string.statsNow), 
-				new Object[]{beverages.size(), ViewHelper.getDecimalStringFromNumber(helper.getAverageRating())}));
+		total.setText(String.format(getString(R.string.statsNow), new Object[]{beverages.size(), ViewHelper.getDecimalStringFromNumber(helper.getAverageRating())}));
 		
 		createChart();		
 		
 		TextView totalCellar = (TextView) findViewById(R.id.totalCellar);
 		
-		totalCellar.setText(String.format(getString(R.string.cellarStatsNow), 
-				new Object[]{helper.getNoBottlesInCellar(), ViewHelper.formatPrice(helper.getCellarValue())}));
+		totalCellar.setText(String.format(getString(R.string.cellarStatsNow), new Object[]{helper.getNoBottlesInCellar(), ViewHelper.formatPrice(helper.getCellarValue())}));
 		
 		
 		TableLayout table = (TableLayout)findViewById(R.id.TableLayoutStats);

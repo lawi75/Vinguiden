@@ -16,7 +16,6 @@
     <string name="name_hint">Namn</string>
     <string name="country_hint">Land</string>
     <string name="wine_name">Vin</string>
-    <string name="wait">Vänligen vänta...</string>
     <string name="upgrading">Uppdatering pågår, vänligen vänta...</string>
     <string name="sort_list">Sortera/Filtrera listen</string>
     
@@ -31,9 +30,6 @@
     <string name="sortOnCategorySub">Filtrera på Kategori</string>
     
     <string name="wineExist">Du har redan lagt till vin med nummer</string>
-    
-    <!-- Stats -->
-    <string name="statsNow">Det finns %1$s olika viner i listan med ett snittbetyg på %2$s stjärnor</string>
     
     <!-- Number Picker dialog -->
     <string name="donateTitle">Tack!</string>

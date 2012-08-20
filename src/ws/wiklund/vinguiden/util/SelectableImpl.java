@@ -84,7 +84,7 @@ public class SelectableImpl implements Selectable {
 			case Selectable.DELETE_ACTION:
 				AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
 				
-				alertDialog.setMessage(String.format(context.getString(R.string.deleteWine), name));
+				alertDialog.setMessage(String.format(context.getString(R.string.deleteBeverage), name));
 				alertDialog.setCancelable(false);
 				alertDialog.setPositiveButton(android.R.string.yes,
 						new DialogInterface.OnClickListener() {

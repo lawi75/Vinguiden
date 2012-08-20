@@ -7,6 +7,7 @@ import ws.wiklund.guides.model.BeverageType;
 import ws.wiklund.guides.model.BeverageTypes;
 
 public class WineTypes implements BeverageTypes {
+	private static final long serialVersionUID = 3885537634006722049L;
 	private static final List<BeverageType> types = new ArrayList<BeverageType>();
 
 	static {

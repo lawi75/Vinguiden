@@ -7,13 +7,13 @@ import ws.wiklund.guides.list.BeverageListCursorAdapter;
 import ws.wiklund.guides.model.Beverage;
 import ws.wiklund.guides.util.AppRater;
 import ws.wiklund.guides.util.ExportDatabaseCSVTask;
+import ws.wiklund.guides.util.GetBeverageFromCursorTask;
 import ws.wiklund.guides.util.Notifyable;
 import ws.wiklund.guides.util.Selectable;
 import ws.wiklund.guides.util.Sortable;
 import ws.wiklund.guides.util.ViewHelper;
 import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
-import ws.wiklund.vinguiden.util.GetWineFromCursorTask;
 import ws.wiklund.vinguiden.util.SelectableImpl;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -155,7 +155,7 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 		
 		Cursor c = (Cursor) WineListActivity.this.getListAdapter().getItem(position);
 
-		new GetWineFromCursorTask(this).execute(c);
+		new GetBeverageFromCursorTask(this, helper, WineActivity.class).execute(c);
 	}
 
 	@Override
@@ -273,7 +273,7 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 			alertDialog.show();
 			break;
 		case R.id.menuAbout:
-			startActivityForResult(new Intent(WineListActivity.this.getApplicationContext(),AboutActivity.class), 0);
+			startActivityForResult(new Intent(WineListActivity.this.getApplicationContext(), AboutActivity.class), 0);
 			break;
 		}
 

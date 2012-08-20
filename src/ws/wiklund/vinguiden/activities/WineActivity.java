@@ -236,8 +236,6 @@ public class WineActivity extends BaseActivity {
 		TextView comment = (TextView) findViewById(R.id.Text_comment);
 		ViewHelper.setText(comment, beverage.getComment());
 		
-
-		
 		RatingBar rating = (RatingBar) findViewById(R.id.ratingBar);
 		rating.setRating(beverage.getRating());
 

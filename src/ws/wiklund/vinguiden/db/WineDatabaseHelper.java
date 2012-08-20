@@ -6,6 +6,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 public class WineDatabaseHelper extends BeverageDatabaseHelper {
+	private static final long serialVersionUID = 4079857874185816324L;
+
 	public static final String DATABASE_NAME = "wineguide.db";
 	private static final int DATABASE_VERSION = 4;
 
