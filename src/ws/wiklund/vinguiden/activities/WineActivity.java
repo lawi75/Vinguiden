@@ -158,7 +158,7 @@ public class WineActivity extends BaseActivity {
 	private void populateUI() {
 		setTitle(beverage.getName());
 		
-		viewHelper.setThumbFromUrl((ImageView) findViewById(R.id.Image_thumbUrl), beverage.getThumb());
+		ViewHelper.setThumbFromUrl((ImageView) findViewById(R.id.Image_thumbUrl), beverage.getThumb());
 		
 		if (beverage.getNo() != -1) {
 			TextView no = (TextView) findViewById(R.id.Text_no);
@@ -171,7 +171,7 @@ public class WineActivity extends BaseActivity {
 
 		Country c = beverage.getCountry();
 		if (c != null) {
-			viewHelper.setCountryThumbFromUrl((ImageView) findViewById(R.id.Image_country_thumbUrl), c);
+			ViewHelper.setCountryThumbFromUrl((ImageView) findViewById(R.id.Image_country_thumbUrl), c);
 			TextView country = (TextView) findViewById(R.id.Text_country);
 			ViewHelper.setText(country, c.getName());
 		}
@@ -224,7 +224,7 @@ public class WineActivity extends BaseActivity {
 
 		TextView tv = (TextView) findViewById(R.id.Text_category);
 
-		if(!viewHelper.isLightVersion(Integer.valueOf(getString(R.string.version_type)))) {
+		if(!ViewHelper.isLightVersion(Integer.valueOf(getString(R.string.version_type)))) {
 			ViewHelper.setText(tv, beverage.getCategory().getName());
 		} else {
 			TextView lbl = (TextView) findViewById(R.id.Text_category_lbl);

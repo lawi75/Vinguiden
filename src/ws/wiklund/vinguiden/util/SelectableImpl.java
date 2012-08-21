@@ -56,14 +56,14 @@ public class SelectableImpl implements Selectable {
 			case Selectable.REMOVE_ACTION:
 				// TODO
 				// Step 1, just remove one bottle
-				Cursor c1 = context.getContentResolver().query(WineCellarProvider.CONTENT_URI,
+				Cursor c = context.getContentResolver().query(WineCellarProvider.CONTENT_URI,
 						null, "beverage_id = ?", new String[] { String.valueOf(id) },
 						null);
 	
-				if (c1.moveToFirst()) {
-					int noBottles = c1.getInt(2);
+				if (c.moveToFirst()) {
+					int noBottles = c.getInt(2);
 					if (noBottles == 1) {
-						int rows = context.getContentResolver().delete(WineCellarProvider.CONTENT_URI, "_id = ?", new String[] { String.valueOf(c1.getInt(0)) });
+						int rows = context.getContentResolver().delete(WineCellarProvider.CONTENT_URI, "_id = ?", new String[] { String.valueOf(c.getInt(0)) });
 	
 						if (rows < 1) {
 							Toast.makeText(context, context.getString(R.string.deleteFailed) + " " + name, Toast.LENGTH_LONG).show();

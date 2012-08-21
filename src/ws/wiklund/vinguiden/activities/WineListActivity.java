@@ -152,10 +152,7 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		
-		Cursor c = (Cursor) WineListActivity.this.getListAdapter().getItem(position);
-
-		new GetBeverageFromCursorTask(this, helper, WineActivity.class).execute(c);
+		new GetBeverageFromCursorTask(this, WineActivity.class).execute((Cursor) WineListActivity.this.getListAdapter().getItem(position));
 	}
 
 	@Override

@@ -107,7 +107,7 @@ public class ModifyWineActivity extends BaseActivity {
 	}
 
 	private void populateUI() {
-    	viewHelper.setThumbFromUrl((ImageView) (findViewById(android.R.id.content).findViewById(R.id.Image_thumbUrl)), beverage.getThumb());
+    	ViewHelper.setThumbFromUrl((ImageView) (findViewById(android.R.id.content).findViewById(R.id.Image_thumbUrl)), beverage.getThumb());
 		TextView no = (TextView) findViewById(R.id.Text_no);
 		no.setText(String.valueOf(beverage.getNo()));
 		
@@ -118,7 +118,7 @@ public class ModifyWineActivity extends BaseActivity {
 		
 		Country c = beverage.getCountry();
 		if (c != null) {
-			viewHelper.setCountryThumbFromUrl((ImageView) (findViewById(android.R.id.content).findViewById(R.id.Image_country_thumbUrl)), c);
+			ViewHelper.setCountryThumbFromUrl((ImageView) (findViewById(android.R.id.content).findViewById(R.id.Image_country_thumbUrl)), c);
 			AutoCompleteTextView country = (AutoCompleteTextView) findViewById(R.id.Edit_country);
 			ViewHelper.setText(country, c.getName());
 		}

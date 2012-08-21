@@ -3,28 +3,23 @@ package ws.wiklund.vinguiden.activities;
 import java.util.ArrayList;
 import java.util.List;
 
-import ws.wiklund.vinguiden.R;
-import ws.wiklund.vinguiden.util.SelectableImpl;
-import ws.wiklund.vinguiden.util.WineTypes;
 import ws.wiklund.guides.util.Selectable;
 import ws.wiklund.guides.util.SelectableAdapter;
 import ws.wiklund.guides.util.Sortable;
+import ws.wiklund.guides.util.SortableAdapter;
 import ws.wiklund.guides.util.ViewHelper;
+import ws.wiklund.vinguiden.R;
+import ws.wiklund.vinguiden.util.SelectableImpl;
+import ws.wiklund.vinguiden.util.WineTypes;
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 public abstract class CustomListActivity extends ListActivity {
 	private List<Sortable> sortableItems;
@@ -32,7 +27,6 @@ public abstract class CustomListActivity extends ListActivity {
 	private SortableAdapter sortableAdapter;
 	private SelectableAdapter selectableAdapter;
 
-	protected ViewHelper viewHelper;
 	protected WineTypes wineTypes;
 
 	private int currentPosition;
@@ -45,9 +39,8 @@ public abstract class CustomListActivity extends ListActivity {
 		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.window_title);
 		
 		wineTypes = new WineTypes();
-		viewHelper = new ViewHelper();
 
-		if (!viewHelper.isLightVersion(Integer.valueOf(getString(R.string.version_type)))) {
+		if (!ViewHelper.isLightVersion(Integer.valueOf(getString(R.string.version_type)))) {
 			View ad = findViewById(R.id.adView);
 			if(ad != null) {
 				ad.setVisibility(View.GONE);
@@ -79,7 +72,7 @@ public abstract class CustomListActivity extends ListActivity {
         		R.drawable.icon, 
         		"beverage.type asc"));
         
-        if(!viewHelper.isLightVersion(Integer.valueOf(getString(R.string.version_type)))) {
+        if(!ViewHelper.isLightVersion(Integer.valueOf(getString(R.string.version_type)))) {
             sortableItems.add(new Sortable(
             		getString(R.string.sortOnCategory), 
             		getString(R.string.sortOnCategorySub), 
@@ -87,12 +80,12 @@ public abstract class CustomListActivity extends ListActivity {
             		"category.name asc"));
         }
         
-		sortableAdapter = new SortableAdapter(this, R.layout.spinner_row);
+		sortableAdapter = new SortableAdapter(this, R.layout.spinner_row, sortableItems, getLayoutInflater());
 		
 		selectableAdapter = new SelectableAdapter(this, R.layout.spinner_row, getLayoutInflater()){
 			public boolean isAvailableInCellar() {
 				Cursor cursor = (Cursor) getListView().getItemAtPosition(currentPosition);
-				return cursor.getInt(22) > 0;
+				return ViewHelper.getBeverageFromCursor(cursor).getBottlesInCellar() > 0;
 			}
 		};
 		
@@ -142,33 +135,4 @@ public abstract class CustomListActivity extends ListActivity {
 	abstract void sort(Sortable sortable);
 	abstract void select(Selectable selectable, int position);
 	
-	
-	class SortableAdapter extends ArrayAdapter<Sortable>{
-		
-		public SortableAdapter(Context context, int textViewResourceId) {
-			super(context, textViewResourceId, sortableItems);
-		}
-		     
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			return getCustomView(position, convertView, parent);
-		}
-
-		public View getCustomView(int position, View convertView, ViewGroup parent) {
-			Sortable s = sortableItems.get(position);
-			
-			LayoutInflater inflater=getLayoutInflater();
-			View row=inflater.inflate(R.layout.spinner_row, parent, false);
-			TextView label=(TextView)row.findViewById(R.id.spinner_header);
-			label.setText(s.getHeader());
-			TextView sub=(TextView)row.findViewById(R.id.spinner_sub);
-			sub.setText(s.getSub());
-			ImageView icon=(ImageView)row.findViewById(R.id.spinner_image);
-			icon.setImageResource(s.getDrawable());
-		    
-			return row;		    
-		}
-		
-	}
-
 }
