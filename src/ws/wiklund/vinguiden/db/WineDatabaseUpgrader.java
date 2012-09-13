@@ -12,10 +12,11 @@ public class WineDatabaseUpgrader extends DatabaseUpgrader {
 	}
 
 	//Available DB versions
-	private static final int VERSION_1 = 1;
-	private static final int VERSION_2 = 2;
-	private static final int VERSION_3 = 3;
-	private static final int VERSION_4 = 4;
+	static final int VERSION_1 = 1;
+	static final int VERSION_2 = 2;
+	static final int VERSION_3 = 3;
+	static final int VERSION_4 = 4;
+	static final int VERSION_5 = 5;
 
 	public int upgrade(int oldVersion, int newVersion) {
 		int version = -1;
@@ -57,6 +58,18 @@ public class WineDatabaseUpgrader extends DatabaseUpgrader {
 					} 
 					
 					return VERSION_4;					
+				}
+				break;
+			case VERSION_4:
+				if(newVersion > VERSION_4) {
+					version = moveToVersion5();
+					Log.d(WineDatabaseUpgrader.class.getName(), "Upgraded DB from version [" + oldVersion + "] to version [" + version + "]");
+
+					if(version < newVersion) {
+						return upgrade(version, newVersion);
+					} 
+					
+					return VERSION_5;					
 				}
 				break;
 			default:
@@ -222,4 +235,99 @@ public class WineDatabaseUpgrader extends DatabaseUpgrader {
 
 		return VERSION_4;		
 	}
+	
+	private int moveToVersion5() throws SQLException {
+		//TODO DEBUG CODE
+		db.execSQL("DROP TABLE IF EXISTS " + WineDatabaseHelper.BEVERAGE_TYPE_TABLE);
+
+		//1. Create and populate beverage type table
+		createAndPopulateBeverageTypeTable(db);
+		
+		//TODO other??
+		/*
+			types.add(BeverageType.OTHER);
+
+		 */
+		
+		//2. Update beverage type ids in beverage table
+		updateBeverageTypeIdInBeverageTable(100, 1);
+		updateBeverageTypeIdInBeverageTable(200, 2);
+		updateBeverageTypeIdInBeverageTable(300, 3);
+		updateBeverageTypeIdInBeverageTable(400, 4);
+		updateBeverageTypeIdInBeverageTable(500, 5);
+		updateBeverageTypeIdInBeverageTable(600, 6);
+		updateBeverageTypeIdInBeverageTable(700, 7);
+		updateBeverageTypeIdInBeverageTable(800, 8);
+		updateBeverageTypeIdInBeverageTable(900, 9);
+		updateBeverageTypeIdInBeverageTable(950, 10);
+		
+		//3. back up beverage table
+		db.execSQL("DROP TABLE IF EXISTS " + WineDatabaseHelper.BEVERAGE_TABLE + "_TMP");
+		db.execSQL("ALTER TABLE " + WineDatabaseHelper.BEVERAGE_TABLE + " RENAME TO " + WineDatabaseHelper.BEVERAGE_TABLE + "_TMP");
+		
+		//4. Create new beverage table
+		db.execSQL(WineDatabaseHelper.DB_CREATE_BEVERAGE);
+		
+		//5. Populate new beverage table
+		db.execSQL("INSERT INTO " + WineDatabaseHelper.BEVERAGE_TABLE + " ("
+				+ "_id, "
+				+ "name, "
+				+ "no, "
+				+ "thumb, "
+				+ "country_id, "
+				+ "year, "
+				+ "beverage_type_id, "
+				+ "producer_id, "
+				+ "strength, "
+				+ "usage, "
+				+ "taste, "
+				+ "provider_id, "
+				+ "rating, "
+				+ "comment, "			
+				+ "category_id, "
+				+ "added"
+				+") "
+			+ "SELECT " 			
+				+ "_id, "
+				+ "name, "
+				+ "no, "
+				+ "thumb, "
+				+ "country_id, "
+				+ "year, "
+				+ "type, "
+				+ "producer_id, "
+				+ "strength, "
+				+ "usage, "
+				+ "taste, "
+				+ "provider_id, "
+				+ "rating, "
+				+ "comment, "			
+				+ "category_id, "
+				+ "added "
+			+ " FROM " + WineDatabaseHelper.BEVERAGE_TABLE + "_TMP");
+		
+		//6. clean up
+		db.execSQL("DROP TABLE IF EXISTS " + WineDatabaseHelper.BEVERAGE_TABLE + "_TMP");
+		
+		return VERSION_5;		
+	}
+
+	@Override
+	public void createAndPopulateBeverageTypeTable(SQLiteDatabase db) {
+		//1. create beverage type table
+		db.execSQL(WineDatabaseHelper.DB_CREATE_BEVERAGE_TYPE);
+		
+		//2. populate beverage type table
+		insertBeverageType(1, "Rött vin");
+		insertBeverageType(2, "Vitt vin");
+		insertBeverageType(3, "Rosévin");
+		insertBeverageType(4, "Mousserande vin, Vitt torrt");
+		insertBeverageType(5, "Mousserande vin, halvtorrt");
+		insertBeverageType(6, "Mousserande vin, Vitt sött");
+		insertBeverageType(7, "Mousserande vin, Rosé");
+		insertBeverageType(8, "Fruktvin");
+		insertBeverageType(9, "Fruktvin, Sött");
+		insertBeverageType(10, "Fruktvin, Torrt");
+	}
+
 }

@@ -2,83 +2,56 @@ package ws.wiklund.vinguiden.activities;
 
 import java.io.File;
 
-import ws.wiklund.guides.bolaget.SystembolagetParser;
+import ws.wiklund.guides.activities.CustomListActivity;
 import ws.wiklund.guides.list.BeverageListCursorAdapter;
-import ws.wiklund.guides.model.Beverage;
-import ws.wiklund.guides.util.AppRater;
+import ws.wiklund.guides.model.BaseModel;
 import ws.wiklund.guides.util.ExportDatabaseCSVTask;
 import ws.wiklund.guides.util.GetBeverageFromCursorTask;
-import ws.wiklund.guides.util.Notifyable;
 import ws.wiklund.guides.util.Selectable;
-import ws.wiklund.guides.util.Sortable;
 import ws.wiklund.guides.util.ViewHelper;
 import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
-import ws.wiklund.vinguiden.util.SelectableImpl;
+import ws.wiklund.vinguiden.util.BootStrapHandler;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.content.pm.PackageInfo;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-public class WineListActivity extends CustomListActivity implements Notifyable {
+public class WineListActivity extends CustomListActivity {
 	private static final String PRIVATE_PREF = "vinguiden";
-	private static final String VERSION_KEY = "version_number";
-
-	private WineDatabaseHelper helper;
-	private SQLiteDatabase db;
-	private Cursor cursor;
-	private SimpleCursorAdapter adapter;
-
-	private String currentSortColumn = "beverage.name asc";
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		initVersions();
-		AppRater.app_launched(this, getString(R.string.app_name), "market://details?id=ws.wiklund.vinguiden");
+		BootStrapHandler.init(this, PRIVATE_PREF);
 
-		// Bootstrapping
-		// PayPalFactory.init(this.getBaseContext());
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			startActivityForResult(new Intent(getApplicationContext(), WineFlowActivity.class), 0);
 		} else {		
-			setContentView(R.layout.winelist);
-	
-			helper = new WineDatabaseHelper(this);
-			cursor = getNewCursor(currentSortColumn);
-	
-			startManagingCursor(cursor);
+			requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+			setContentView(R.layout.list);
+			getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.window_title);
 	
 			// Now create a new list adapter bound to the cursor.
-			adapter = new BeverageListCursorAdapter(this, cursor, wineTypes);
+			cursorAdapter = new BeverageListCursorAdapter(this, getNewCursor(currentSortColumn));
 	
+			startManagingCursor(cursorAdapter.getCursor());
+
 			// Bind to our new adapter.
-			setListAdapter(adapter);
+			setListAdapter(cursorAdapter);
 	
 			ListView list = getListView();
 			list.setOnItemLongClickListener(new OnItemLongClickListener() {
@@ -91,62 +64,12 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 		}
 	}
 
-	private void initVersions() {
-		SharedPreferences sharedPref = getSharedPreferences(PRIVATE_PREF, Context.MODE_PRIVATE);
-		int currentVersionNumber = 0;
-		int savedVersionNumber = sharedPref.getInt(VERSION_KEY, 0);
-
-		try {
-			PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
-			currentVersionNumber = pi.versionCode;
-		} catch (Exception e) {
-		}
-
-		if (currentVersionNumber > savedVersionNumber) {
-			doPostUppgrade(currentVersionNumber);
-			
-			showWhatsNewDialog();
-
-			Editor editor = sharedPref.edit();
-
-			editor.putInt(VERSION_KEY, currentVersionNumber);
-			editor.commit();
-		}
-	}
-
-	private void doPostUppgrade(int currentVersionNumber) {
-		switch (currentVersionNumber) {
-			case 6:
-				//Version 2.0 with new cellar function. Need to update price for all wines
-				new PostUpdateTask().execute(new Void[0]);
-				break;
-			default:
-				break;
+	protected Cursor getNewCursor(String sortColumn) {
+		if(db == null || !db.isOpen()) {		
+			db = new WineDatabaseHelper(this).getReadableDatabase();
 		}
 		
-	}
-
-	private void showWhatsNewDialog() {
-    	LayoutInflater inflater = LayoutInflater.from(this);		
-        View view = inflater.inflate(R.layout.whatsnew, null);
-      	
-  	  	Builder builder = new AlertDialog.Builder(this);
-
-	  	builder.setView(view).setTitle(getString(R.string.whatsnew)).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-	  		@Override
-	  		public void onClick(DialogInterface dialog, int which) {
-	  			dialog.dismiss();
-	  		}
-	    });
-  	
-	  	builder.create().show();
-	}
-
-	private Cursor getNewCursor(String sortColumn) {
-		db = helper.getReadableDatabase();
-		return db.rawQuery(
-				WineDatabaseHelper.SQL_SELECT_ALL_BEVERAGES_INCLUDING_NO_IN_CELLAR
-						+ " ORDER BY " + sortColumn, null);
+		return db.rawQuery(WineDatabaseHelper.SQL_SELECT_ALL_BEVERAGES_INCLUDING_NO_IN_CELLAR + " ORDER BY " + sortColumn, null);
 	}
 
 	@Override
@@ -156,71 +79,25 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		notifyDataSetChanged();
-	}
-
 	public void notifyDataSetChanged() {
-		if(db == null || adapter == null) {
-			return;
-		}
+		super.notifyDataSetChanged();
 		
-		if (!db.isOpen() || adapter.getCount() == 0) {
-			stopManagingCursor(cursor);
-			cursor = getNewCursor(currentSortColumn);
+		if (cursorAdapter != null) {
+			WineDatabaseHelper helper = new WineDatabaseHelper(this);
+			int bottles = helper.getNoBottlesInCellar();
+			// Update title with no wines in cellar
+			if (bottles > 0) {
+				TextView view = (TextView) WineListActivity.this
+						.findViewById(R.id.title);
 
-			startManagingCursor(cursor);
-			adapter.changeCursor(cursor);
-		}
+				String text = view.getText().toString();
+				if (text.contains("(")) {
+					text = text.substring(0, text.indexOf("(") - 1);
+				}
 
-		adapter.notifyDataSetChanged();
-
-		int bottles = helper.getNoBottlesInCellar();
-		// Update title with no wines in cellar
-		if (bottles > 0) {
-			TextView view = (TextView) WineListActivity.this.findViewById(R.id.title);
-
-			String text = view.getText().toString();
-			if (text.contains("(")) {
-				text = text.substring(0, text.indexOf("(") - 1);
-			}
-
-			view.setText(text + " (" + bottles + ")");
-		}
-	}
-
-	@Override
-	protected void onDestroy() {
-		stopManagingCursor(cursor);
-
-		if (adapter != null) {
-			Cursor c = adapter.getCursor();
-			if(c != null) {
-				c.close();
+				view.setText(text + " (" + bottles + ")");
 			}
 		}
-		
-		if (cursor != null) {
-			cursor.close();
-		}
-
-		if (db != null) {
-			db.close();
-		}
-
-		super.onDestroy();
-	}
-
-	@Override
-	protected void onRestart() {
-		notifyDataSetChanged();
-		super.onRestart();
-	}
-
-	@Override
-	protected void onResume() {
-		notifyDataSetChanged();
-		super.onResume();
 	}
 
 	@Override
@@ -255,7 +132,7 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 			
 			alertDialog.setButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
-			       new ExportDatabaseCSVTask(WineListActivity.this, helper, exportFile, WineListActivity.this.getListAdapter().getCount(), wineTypes).execute();
+			       new ExportDatabaseCSVTask(WineListActivity.this, new WineDatabaseHelper(WineListActivity.this), exportFile, WineListActivity.this.getListAdapter().getCount()).execute();
 				} 
 			});
 			
@@ -276,122 +153,26 @@ public class WineListActivity extends CustomListActivity implements Notifyable {
 
 		return true;
 	}
-
-	private boolean hasSomeStats() {
-		return adapter.getCount() > 0;
+	
+	@Override
+	public void addBeverage(View view) {
+    	Intent intent = new Intent(view.getContext(), AddWineActivity.class);
+    	startActivityForResult(intent, 0);
 	}
 
 	@Override
-	void sort(Sortable sortable) {
-		currentSortColumn = sortable.getSortColumn();
-
-		cursor = getNewCursor(currentSortColumn);
-		adapter.changeCursor(cursor);
-
-		adapter.notifyDataSetChanged();
-	}
-
-	@Override
-	void select(Selectable selectable, int position) {
+	protected void select(Selectable selectable, int position) {
 		ListView listView = WineListActivity.this.getListView();
 		final Cursor c = (Cursor) listView.getItemAtPosition(position);
 
-		((SelectableImpl) selectable).select(this, helper, c.getInt(0), c.getString(1));
+		selectable.select(this, new WineDatabaseHelper(this), new BaseModel(c.getInt(0), c.getString(1)));
 	}
-
 	
-	private class PostUpdateTask extends AsyncTask<Void, Integer, Void> {
-		private ProgressDialog dialog;
-		private SQLiteDatabase innerDB;
-		
-		private Handler progressHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-    			Log.d(WineListActivity.class.getName(), "current progress [" + dialog.getProgress() + "]");
-    			dialog.incrementProgressBy(1);
-            }
-        };
-        
-		@Override
-		protected Void doInBackground(Void... v) {
-			Cursor c = null;
-			
-			try {
-				c = getDatabase().rawQuery("SELECT _id, no FROM beverage WHERE price IS NULL", null);
-				Log.d(WineListActivity.class.getName(), "Will set default price for all wines with data from Systembolaget");
-				Log.d(WineListActivity.class.getName(), "Will update [" + c.getCount() + "] wines with price");
-
-				while(c.moveToNext()) {
-					try {
-						Beverage beverage = SystembolagetParser.parseResponse(c.getString(1), wineTypes);
-						Log.d(WineListActivity.class.getName(), "Updating price for: " + beverage);
-
-						if(beverage != null && beverage.hasPrice()) {
-							beverage.setId(c.getInt(0));
-							helper.updateBeverage(beverage);
-							Log.d(WineListActivity.class.getName(), "Price updated");
-						}
-					} catch (Exception e) {
-			        	Log.w(WineListActivity.class.getName(), "Failed to get info for wine with no: " + c.getString(0), e);
-					}
-
-					publishProgress(0);
-				}
-			} finally {
-				if (c != null) {
-					c.close();
-				}
-				
-				innerDB.close();
-			}
-			
-			return null;
-		}
-		
-		@Override
-		protected void onPostExecute(Void v) {
-			dialog.hide();
-		}
-		
-		@Override
-		protected void onPreExecute() {
-			Cursor c = null;
-			int count = 0;
-			try {
-				c = getDatabase().rawQuery("SELECT _id, no FROM beverage WHERE price IS NULL", null);
-				count = c.getCount();
-			} finally {
-				if (c != null) {
-					c.close();
-				}
-				
-				innerDB.close();
-			}
-			
-			dialog = new ProgressDialog(WineListActivity.this, R.style.CustomDialog);
-			dialog.setMessage(getString(R.string.upgrading));
-			dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-			dialog.setCancelable(false);
-			dialog.setMax(count);
-			dialog.setProgress(0);
-			dialog.show();
-
-			super.onPreExecute();
-		}
-		
-		private SQLiteDatabase getDatabase() {
-			if(innerDB == null || !innerDB.isOpen()) {
-				innerDB = helper.getReadableDatabase();
-			}
-			
-			return innerDB;
-		}
-		
-		protected void onProgressUpdate(Integer... progress) {
-			progressHandler.sendEmptyMessage(0);
-		}
-		
+	@Override
+	protected void addSelectables() {
+		selectableAdapter.add(new Selectable(getString(R.string.addToCellar), R.drawable.icon, Selectable.ADD_ACTION));
+		selectableAdapter.add(new Selectable(getString(R.string.removeFromCellar), R.drawable.from_cellar, Selectable.REMOVE_ACTION));
+		selectableAdapter.add(new Selectable(getString(R.string.deleteTitle), R.drawable.trash, Selectable.DELETE_ACTION));
 	}
-
+	
 }

@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Beverage -->
-    <string name="recommend_wine_header">Vintips via Min vinlista för Android</string>
-    
-    <!-- Cellar -->
-    <string name="cellar">Vinkällaren</string>
+    <string name="recommend_header">Vintips via Min vinlista för Android</string>
     
     <!-- Add -->
     <string name="add_wine_name">Lägg till vin</string>
@@ -13,54 +10,23 @@
     <!-- Generic -->
     <string name="app_name">Min vinlista</string>
     <string name="modify_wine_name">Ändra vin</string>    
-    <string name="name_hint">Namn</string>
-    <string name="country_hint">Land</string>
-    <string name="wine_name">Vin</string>
-    <string name="upgrading">Uppdatering pågår, vänligen vänta...</string>
-    <string name="sort_list">Sortera/Filtrera listen</string>
     
-    <string name="sortOnName">Namn</string>
-    <string name="sortOnRank">Betyg</string>
+    <!-- WineListActivity -->
     <string name="sortOnType">Vinsort</string>
-    <string name="sortOnCategory">Kategori</string>
-        
-    <string name="sortOnNameSub">Sortera på namn fallande</string>
-    <string name="sortOnRankSub">Sortera på Betyg fallande</string>
-    <string name="sortOnTypeSub">Filtrera på vinsort</string>
-    <string name="sortOnCategorySub">Filtrera på Kategori</string>
+    <string name="sortOnTypeSub">Sortera på vinsort</string>
     
-    <string name="wineExist">Du har redan lagt till vin med nummer</string>
+    <string name="exist">Du har redan lagt till vin med nummer</string>
     
-    <!-- Number Picker dialog -->
-    <string name="donateTitle">Tack!</string>
-    <string name="donate">Tack för att du vill hjälpa till att förbättra Min vinlista, välj belopp (SEK) och klicka på donera</string>
-    <string name="sek">SEK</string>
-
-    <string name="dialog_set_number">Donera</string>
-    <string name="dialog_cancel">Avbryt</string>
+    <!-- Error Messages -->
+    <string name="failedToExport">Tyvärr gick det inte att importera din gamla databas</string>
     
-    <string name="advanced">Avancerat</string>
-
-    <!-- Wine Cellar -->
-    <string name="add">Lägg till</string>
-    <string name="bottles_in_cellar">%1$s flaskor i källaren till ett värde av %2$s</string>
-    
-    <!-- Reminder -->
-    <string name="reminderTitle">Dags att avnjuta %1$s st %2$s</string>
-    <string name="reminderNote">De är nu dags att avnjuta de flaskor som du la in i källaren %1$s</string>
-    <string name="reminderNote1">på plats %1$s</string>
-        
     <!-- Whats new -->
-    <string name="version110">Version 1.1.0</string>
-    <string name="version110msg">Div buggfixar samt bland annat fungerar dela på Facebook nu. Det finns även möjlighet att donera pengar om man tycker applikationen är bra.</string>
-    <string name="version20">Version 2.0</string>
-    <string name="version20msg">Div buggfixar, en första enkel version av vinkällare samt statistik över dina viner.</string>
-    <string name="version201">Version 2.0.1</string>
-    <string name="version201msg">Div buggfixar</string>
-    <string name="version21">Version 2.1</string>
-    <string name="version21msg">Bättre stöd för landskaps vyn samt mindre buggfixar vid sökande av viner</string>
-    <string name="version211">Version 2.1.1</string>
-    <string name="version211msg">Mindre buggfixar gällande ta bort viner ur listan</string>
-    <string name="version22">Version 2.2</string>
-    <string name="version22msg">Lägga till vin manuellt\nMöjlighet att ta en ny bild av sitt vin med kameran istället för den som används\nLägga till kommentarer\nExportera listan till SD kortet för att sedan öppna den i excel\nTexten har gjorts mer läsvänlig</string>    
+    <string name="versionHeads">Version 2.2.1£Version 2.2£Version 2.1.1£Version 2.1£Version 2.0.1£Version 2.0£Version 1.1.0</string>
+    <string name="versionMessages">Fixat problem med instabil kommunikation mot www.systembolaget.se samt div. andra buggar£Lägga till vin manuellt\nMöjlighet att ta en ny bild av sitt vin med kameran istället för den som används\nLägga till kommentarer\nExportera listan till SD kortet för att sedan öppna den i excel\nTexten har gjorts mer läsvänlig£Mindre buggfixar gällande ta bort viner ur listan£Bättre stöd för landskaps vyn samt mindre buggfixar vid sökande av viner£Div buggfixar£Div buggfixar, en första enkel version av vinkällare samt statistik över dina viner.£Div buggfixar samt bland annat fungerar dela på Facebook nu. Det finns även möjlighet att donera pengar om man tycker applikationen är bra.</string>
+    
+	<!-- Promo -->
+    <string name="promo_title">Vinguiden Pro</string>
+    <string name="promo_msg">Om du vill ha mer funktioner och slippa all reklam finns nu Vinguiden Pro at ladda ner från Google Play</string>
+    <string name="promo_get">Hämta den!</string>
+    
 </resources>

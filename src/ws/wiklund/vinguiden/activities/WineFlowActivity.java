@@ -14,8 +14,6 @@ import ws.wiklund.guides.util.SelectableAdapter;
 import ws.wiklund.guides.util.ViewHelper;
 import ws.wiklund.vinguiden.R;
 import ws.wiklund.vinguiden.db.WineDatabaseHelper;
-import ws.wiklund.vinguiden.util.SelectableImpl;
-import ws.wiklund.vinguiden.util.WineTypes;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -37,7 +35,6 @@ public class WineFlowActivity extends BaseActivity implements Notifyable {
 	private SelectableAdapter selectableAdapter;
 	private WineDatabaseHelper helper;
 	private int currentPosition;
-	private WineTypes wineTypes;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -48,15 +45,13 @@ public class WineFlowActivity extends BaseActivity implements Notifyable {
 			startActivityForResult(new Intent(getApplicationContext(), WineListActivity.class), 0);
 		} else {
 			requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
-			setContentView(R.layout.wineflow);
+			setContentView(R.layout.flow);
 			getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.window_title);
 	
-			wineTypes = new WineTypes();
-
 			helper = new WineDatabaseHelper(this);			
 			
 			final CoverFlow flow = (CoverFlow) findViewById(R.id.coverFlow);
-			adapter = new CoverFlowAdapter(this, helper, wineTypes);
+			adapter = new CoverFlowAdapter(this, helper);
 	
 			flow.setAdapter(adapter);
 	
@@ -88,9 +83,9 @@ public class WineFlowActivity extends BaseActivity implements Notifyable {
 				}
 			};
 			
-			selectableAdapter.add(new SelectableImpl(getString(R.string.addToCellar), R.drawable.icon, Selectable.ADD_ACTION));
-			selectableAdapter.add(new SelectableImpl(getString(R.string.removeFromCellar), R.drawable.from_cellar, Selectable.REMOVE_ACTION));
-			selectableAdapter.add(new SelectableImpl(getString(R.string.deleteTitle), R.drawable.trash, Selectable.DELETE_ACTION));
+			selectableAdapter.add(new Selectable(getString(R.string.addToCellar), R.drawable.icon, Selectable.ADD_ACTION));
+			selectableAdapter.add(new Selectable(getString(R.string.removeFromCellar), R.drawable.from_cellar, Selectable.REMOVE_ACTION));
+			selectableAdapter.add(new Selectable(getString(R.string.deleteTitle), R.drawable.trash, Selectable.DELETE_ACTION));
 		}
 	}
 	
@@ -125,7 +120,7 @@ public class WineFlowActivity extends BaseActivity implements Notifyable {
 			
 			alertDialog.setButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
-			       new ExportDatabaseCSVTask(WineFlowActivity.this, helper, exportFile, adapter.getCount(), wineTypes).execute();
+			       new ExportDatabaseCSVTask(WineFlowActivity.this, helper, exportFile, adapter.getCount()).execute();
 				} 
 			});
 			
@@ -147,7 +142,7 @@ public class WineFlowActivity extends BaseActivity implements Notifyable {
 		return true;
 	}
 	
-	public void addWine(View view) {
+	public void addBeverage(View view) {
     	Intent intent = new Intent(view.getContext(), AddWineActivity.class);
     	startActivityForResult(intent, 0);
     }
@@ -173,7 +168,7 @@ public class WineFlowActivity extends BaseActivity implements Notifyable {
             @Override 
             public void onClick(DialogInterface dialog, int which) { 
                 dialog.dismiss();
-                ((SelectableImpl) selectableAdapter.getItem(which)).select(WineFlowActivity.this, helper, b.getId(), b.getName());
+                ((Selectable) selectableAdapter.getItem(which)).select(WineFlowActivity.this, helper, b);
             }
 		}); 
 
