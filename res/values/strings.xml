@@ -21,12 +21,12 @@
     <string name="failedToExport">Tyvärr gick det inte att importera din gamla databas</string>
     
     <!-- Whats new -->
-    <string name="versionHeads">Version 2.2.1£Version 2.2£Version 2.1.1£Version 2.1£Version 2.0.1£Version 2.0£Version 1.1.0</string>
-    <string name="versionMessages">Fixat problem med instabil kommunikation mot www.systembolaget.se samt div. andra buggar£Lägga till vin manuellt\nMöjlighet att ta en ny bild av sitt vin med kameran istället för den som används\nLägga till kommentarer\nExportera listan till SD kortet för att sedan öppna den i excel\nTexten har gjorts mer läsvänlig£Mindre buggfixar gällande ta bort viner ur listan£Bättre stöd för landskaps vyn samt mindre buggfixar vid sökande av viner£Div buggfixar£Div buggfixar, en första enkel version av vinkällare samt statistik över dina viner.£Div buggfixar samt bland annat fungerar dela på Facebook nu. Det finns även möjlighet att donera pengar om man tycker applikationen är bra.</string>
+    <string name="versionHeads">Version 2.2.2£Version 2.2.1£Version 2.2£Version 2.1.1£Version 2.1£Version 2.0.1£Version 2.0£Version 1.1.0</string>
+    <string name="versionMessages">Mindre fixar£Fixat problem med instabil kommunikation mot www.systembolaget.se samt div. andra buggar£Lägga till vin manuellt\nMöjlighet att ta en ny bild av sitt vin med kameran istället för den som används\nLägga till kommentarer\nExportera listan till SD kortet för att sedan öppna den i excel\nTexten har gjorts mer läsvänlig£Mindre buggfixar gällande ta bort viner ur listan£Bättre stöd för landskaps vyn samt mindre buggfixar vid sökande av viner£Div buggfixar£Div buggfixar, en första enkel version av vinkällare samt statistik över dina viner.£Div buggfixar samt bland annat fungerar dela på Facebook nu. Det finns även möjlighet att donera pengar om man tycker applikationen är bra.</string>
     
 	<!-- Promo -->
     <string name="promo_title">Vinguiden Pro</string>
-    <string name="promo_msg">Om du vill ha mer funktioner och slippa all reklam finns nu Vinguiden Pro at ladda ner från Google Play</string>
+    <string name="promo_msg">Om du vill ha mer funktioner och slippa all reklam finns nu Vinguiden Pro att köpa på Google Play</string>
     <string name="promo_get">Hämta den!</string>
     
 </resources>

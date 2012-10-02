@@ -16,9 +16,9 @@ public class BootStrapHandler {
 	public static void init(Context context, String preferenceKey) {
 		BasicBootStrapHandler.init(context, preferenceKey);
 		
-		/*if (runShowPromotionOnce(context)) {
+		if (runShowPromotionOnce(context)) {
 			showPromotion(context);
-		}*/
+		}
 	}
 
 	private static boolean runShowPromotionOnce(Context context) {
@@ -49,7 +49,8 @@ public class BootStrapHandler {
             	context.startActivity(marketIntent);
                 dialog.dismiss();
             }
-        });        
+        });
+        
         ll.addView(b1);
 
         Button b3 = new Button(context);
