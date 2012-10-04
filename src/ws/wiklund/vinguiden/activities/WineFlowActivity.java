@@ -118,13 +118,13 @@ public class WineFlowActivity extends BaseActivity implements Notifyable {
 			final File exportFile = new File(ViewHelper.getRoot(), "export_guide.csv");
 			alertDialog.setMessage(String.format(getString(R.string.export_message), new Object[]{exportFile.getAbsolutePath()}));
 			
-			alertDialog.setButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
+			alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.yes), new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 			       new ExportDatabaseCSVTask(WineFlowActivity.this, helper, exportFile, adapter.getCount()).execute();
 				} 
 			});
 			
-			alertDialog.setButton2(getString(android.R.string.no), new DialogInterface.OnClickListener() {
+			alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.no), new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					alertDialog.cancel();
 				} 
