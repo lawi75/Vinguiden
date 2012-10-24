@@ -84,18 +84,20 @@ public class WineDatabaseUpgrader extends DatabaseUpgrader {
 		db.execSQL(BeverageDatabaseHelper.DB_CREATE_CATEGORY);
 
 		//Create category_id column in BEVERAGE table
-		db.execSQL("ALTER TABLE " + WineDatabaseHelper.BEVERAGE_TABLE + " ADD COLUMN category_id integer");
+		db.execSQL("ALTER TABLE wine ADD COLUMN category_id integer");
 		
 		//Create foreign key in BEVERAGE table. SQLite doesn't support this out of the box therefore a more complex way of solving this
 		//1. Create tmp back up of beverage table
-		db.execSQL("DROP TABLE IF EXISTS " + WineDatabaseHelper.BEVERAGE_TABLE + "_TMP");
-		db.execSQL("ALTER TABLE " + WineDatabaseHelper.BEVERAGE_TABLE + " RENAME TO " + WineDatabaseHelper.BEVERAGE_TABLE + "_TMP");
+		db.execSQL("DROP TABLE IF EXISTS wine_TMP");
+		db.execSQL("ALTER TABLE wine RENAME TO wine_TMP");
 		
-		//2. Create new empty beverage table with category support
+		//2. Create new empty beverage table with category support and then rename to wine because
+		//beverage concept doesn't exist yet
 		db.execSQL(WineDatabaseHelper.DB_CREATE_BEVERAGE);
+		db.execSQL("ALTER TABLE " + WineDatabaseHelper.BEVERAGE_TABLE + " RENAME TO wine");
 		
 		//3. Copy data from tmp table
-		db.execSQL("INSERT INTO " + WineDatabaseHelper.BEVERAGE_TABLE + " ("
+		db.execSQL("INSERT INTO wine ("
 				+ "_id, "
 				+ "name, "
 				+ "no, "
@@ -130,10 +132,10 @@ public class WineDatabaseUpgrader extends DatabaseUpgrader {
 				+ "comment, "			
 				+ "category_id, "
 				+ "added "
-			+ " FROM " + WineDatabaseHelper.BEVERAGE_TABLE +"_TMP");
+			+ " FROM wine_TMP");
 		
 		//4. Drop back up of beverage table
-		db.execSQL("DROP TABLE " + WineDatabaseHelper.BEVERAGE_TABLE + "_TMP");
+		db.execSQL("DROP TABLE wine_TMP");
 		
 		return VERSION_2;
 	}
@@ -142,7 +144,7 @@ public class WineDatabaseUpgrader extends DatabaseUpgrader {
 		Log.d(WineDatabaseUpgrader.class.getName(), "Moving to version 3 of DB");
 
 		//Add price column to wine
-		db.execSQL("ALTER TABLE " + WineDatabaseHelper.BEVERAGE_TABLE + " ADD COLUMN price float");
+		db.execSQL("ALTER TABLE wine ADD COLUMN price float");
 		Log.d(WineDatabaseUpgrader.class.getName(), "Added price column");
 		
 		//Create CELLAR table

@@ -42,7 +42,7 @@ public class WineFlowActivity extends BaseActivity implements Notifyable {
 		super.onCreate(savedInstanceState);
 
 		if (getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
-			startActivityForResult(new Intent(getApplicationContext(), WineListActivity.class), 0);
+			startActivity(new Intent(getApplicationContext(), WineListActivity.class));
 		} else {
 			requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 			setContentView(R.layout.flow);
@@ -109,7 +109,7 @@ public class WineFlowActivity extends BaseActivity implements Notifyable {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menuStats:
-			startActivityForResult(new Intent(WineFlowActivity.this.getApplicationContext(), StatsActivity.class), 0);
+			startActivity(new Intent(getApplicationContext(), StatsActivity.class));
 			break;
 		case R.id.menuExport:
 			final AlertDialog alertDialog = new AlertDialog.Builder(WineFlowActivity.this).create();
@@ -135,7 +135,7 @@ public class WineFlowActivity extends BaseActivity implements Notifyable {
 			alertDialog.show();
 			break;
 		case R.id.menuAbout:
-			startActivityForResult(new Intent(WineFlowActivity.this.getApplicationContext(), AboutActivity.class), 0);
+			startActivity(new Intent(getApplicationContext(), AboutActivity.class));
 			break;
 		}
 

@@ -39,7 +39,7 @@ public class WineListActivity extends CustomListActivity {
 		BootStrapHandler.init(this, PRIVATE_PREF);
 
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			startActivityForResult(new Intent(getApplicationContext(), WineFlowActivity.class), 0);
+			startActivity(new Intent(getApplicationContext(), WineFlowActivity.class));
 		} else {		
 			requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 			setContentView(R.layout.list);
@@ -87,8 +87,7 @@ public class WineListActivity extends CustomListActivity {
 			int bottles = helper.getNoBottlesInCellar();
 			// Update title with no wines in cellar
 			if (bottles > 0) {
-				TextView view = (TextView) WineListActivity.this
-						.findViewById(R.id.title);
+				TextView view = (TextView) findViewById(R.id.title);
 
 				String text = view.getText().toString();
 				if (text.contains("(")) {
@@ -121,7 +120,7 @@ public class WineListActivity extends CustomListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menuStats:
-			startActivityForResult(new Intent(WineListActivity.this.getApplicationContext(),StatsActivity.class), 0);
+			startActivity(new Intent(getApplicationContext(), StatsActivity.class));
 			break;
 		case R.id.menuExport:
 			final AlertDialog alertDialog = new AlertDialog.Builder(WineListActivity.this).create();
@@ -147,7 +146,7 @@ public class WineListActivity extends CustomListActivity {
 			alertDialog.show();
 			break;
 		case R.id.menuAbout:
-			startActivityForResult(new Intent(WineListActivity.this.getApplicationContext(), AboutActivity.class), 0);
+			startActivity(new Intent(getApplicationContext(), AboutActivity.class));
 			break;
 		}
 
