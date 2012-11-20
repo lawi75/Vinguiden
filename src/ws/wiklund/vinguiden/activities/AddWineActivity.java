@@ -23,6 +23,11 @@ public class AddWineActivity extends BaseActivity {
 
         setContentView(R.layout.add);
         
+    	View v1 = findViewById(R.id.TableRowFindBeverageByName);
+    	if(v1 != null) {
+    		v1.setVisibility(View.GONE);
+    	}
+        
         helper = new WineDatabaseHelper(this);
         searchStr = (EditText)findViewById(R.id.EditNo);
         
