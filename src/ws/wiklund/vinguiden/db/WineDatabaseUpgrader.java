@@ -17,6 +17,7 @@ public class WineDatabaseUpgrader extends DatabaseUpgrader {
 	static final int VERSION_3 = 3;
 	static final int VERSION_4 = 4;
 	static final int VERSION_5 = 5;
+	static final int VERSION_6 = 6;
 
 	public int upgrade(int oldVersion, int newVersion) {
 		int version = -1;
@@ -70,6 +71,18 @@ public class WineDatabaseUpgrader extends DatabaseUpgrader {
 					} 
 					
 					return VERSION_5;					
+				}
+				break;
+			case VERSION_5:
+				if(newVersion > VERSION_5) {
+					version = moveToVersion6();
+					Log.d(WineDatabaseUpgrader.class.getName(), "Upgraded DB from version [" + oldVersion + "] to version [" + version + "]");
+
+					if(version < newVersion) {
+						return upgrade(version, newVersion);
+					} 
+					
+					return VERSION_6;					
 				}
 				break;
 			default:
@@ -312,6 +325,12 @@ public class WineDatabaseUpgrader extends DatabaseUpgrader {
 		db.execSQL("DROP TABLE IF EXISTS " + WineDatabaseHelper.BEVERAGE_TABLE + "_TMP");
 		
 		return VERSION_5;		
+	}
+
+	private int moveToVersion6() throws SQLException {
+		insertImageColumnToBeverage();
+		
+		return VERSION_6;
 	}
 
 	@Override
