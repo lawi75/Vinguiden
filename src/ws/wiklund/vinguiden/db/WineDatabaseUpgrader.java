@@ -326,7 +326,7 @@ public class WineDatabaseUpgrader extends DatabaseUpgrader {
 		
 		return VERSION_5;		
 	}
-
+	
 	private int moveToVersion6() throws SQLException {
 		insertImageColumnToBeverage();
 		
