@@ -2,6 +2,8 @@ package ws.wiklund.vinguiden.activities;
 
 import java.io.File;
 
+import com.woozzu.android.widget.IndexableListView;
+
 import ws.wiklund.guides.activities.CustomListActivity;
 import ws.wiklund.guides.list.BeverageListCursorAdapter;
 import ws.wiklund.guides.model.BaseModel;
@@ -53,7 +55,9 @@ public class WineListActivity extends CustomListActivity {
 			// Bind to our new adapter.
 			setListAdapter(cursorAdapter);
 	
-			ListView list = getListView();
+			IndexableListView list = (IndexableListView) getListView();
+			list.setFastScrollEnabled(true);
+			
 			list.setOnItemLongClickListener(new OnItemLongClickListener() {
 				@Override
 				public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
