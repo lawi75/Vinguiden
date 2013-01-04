@@ -2,6 +2,7 @@ package ws.wiklund.vinguiden.db;
 
 import ws.wiklund.guides.db.BeverageDatabaseHelper;
 import ws.wiklund.guides.db.DatabaseUpgrader;
+import ws.wiklund.guides.model.BeverageType;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -10,14 +11,6 @@ public class WineDatabaseUpgrader extends DatabaseUpgrader {
 	public WineDatabaseUpgrader(SQLiteDatabase db) {
 		super(db);
 	}
-
-	//Available DB versions
-	static final int VERSION_1 = 1;
-	static final int VERSION_2 = 2;
-	static final int VERSION_3 = 3;
-	static final int VERSION_4 = 4;
-	static final int VERSION_5 = 5;
-	static final int VERSION_6 = 6;
 
 	public int upgrade(int oldVersion, int newVersion) {
 		int version = -1;
@@ -83,6 +76,18 @@ public class WineDatabaseUpgrader extends DatabaseUpgrader {
 					} 
 					
 					return VERSION_6;					
+				}
+				break;
+			case VERSION_6:
+				if(newVersion > VERSION_6) {
+					version = moveToVersion7();
+					Log.d(WineDatabaseUpgrader.class.getName(), "Upgraded DB from version [" + oldVersion + "] to version [" + version + "]");
+
+					if(version < newVersion) {
+						return upgrade(version, newVersion);
+					} 
+					
+					return VERSION_7;					
 				}
 				break;
 			default:
@@ -332,23 +337,34 @@ public class WineDatabaseUpgrader extends DatabaseUpgrader {
 		
 		return VERSION_6;
 	}
+	
+	private int moveToVersion7() {
+		db.execSQL("DROP TABLE IF EXISTS " + WineDatabaseHelper.BEVERAGE_TYPE_TABLE);
+		
+		createAndPopulateBeverageTypeTable(db);
+		
+		addOtherBeverageType();
 
+		return VERSION_7;
+	}
+	
 	@Override
 	public void createAndPopulateBeverageTypeTable(SQLiteDatabase db) {
 		//1. create beverage type table
 		db.execSQL(WineDatabaseHelper.DB_CREATE_BEVERAGE_TYPE);
 		
 		//2. populate beverage type table
-		insertBeverageType(1, "Rött vin");
+		insertBeverageType(1, "Rštt vin");
 		insertBeverageType(2, "Vitt vin");
-		insertBeverageType(3, "Rosévin");
+		insertBeverageType(3, "RosŽvin");
 		insertBeverageType(4, "Mousserande vin, Vitt torrt");
 		insertBeverageType(5, "Mousserande vin, halvtorrt");
-		insertBeverageType(6, "Mousserande vin, Vitt sött");
-		insertBeverageType(7, "Mousserande vin, Rosé");
+		insertBeverageType(6, "Mousserande vin, Vitt sštt");
+		insertBeverageType(7, "Mousserande vin, RosŽ");
 		insertBeverageType(8, "Fruktvin");
-		insertBeverageType(9, "Fruktvin, Sött");
+		insertBeverageType(9, "Fruktvin, Sštt");
 		insertBeverageType(10, "Fruktvin, Torrt");
+		insertBeverageType(BeverageType.OTHER.getId(), BeverageType.OTHER.getName());
 	}
 
 }

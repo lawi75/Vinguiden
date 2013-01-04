@@ -9,7 +9,6 @@ public class WineDatabaseHelper extends BeverageDatabaseHelper {
 	private static final long serialVersionUID = 4079857874185816324L;
 
 	public static final String DATABASE_NAME = "wineguide.db";
-	private static final int DATABASE_VERSION = WineDatabaseUpgrader.VERSION_6;
 
 	public WineDatabaseHelper(Context context) {
 		this(context, DATABASE_NAME);
@@ -17,7 +16,7 @@ public class WineDatabaseHelper extends BeverageDatabaseHelper {
 
 	//Used for testing so that db can be created and dropped with out destroying dev data
 	public WineDatabaseHelper(Context context, String dbName) {
-		super(context, dbName, DATABASE_VERSION);
+		super(context, dbName, DatabaseUpgrader.getLatestDBVersion());
 	}
 
 	@Override

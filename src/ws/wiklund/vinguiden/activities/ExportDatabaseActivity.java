@@ -22,17 +22,18 @@ public class ExportDatabaseActivity extends BaseActivity {
         File dbFile = new File(Environment.getDataDirectory() + "/data/ws.wiklund.vinguiden/databases/wineguide.db");
         File exportDir = new File(Environment.getExternalStorageDirectory(), "");
         
-        if (!exportDir.exists()) {
-        	exportDir.mkdirs();
-        }
-        
-        File file = new File(exportDir, "export.db");
-
-        try {
-        	file.createNewFile();
-        	ViewHelper.copyFile(dbFile, file);
-        } catch (IOException e) {
-			Log.e(ExportDatabaseActivity.class.getName(), "Failed to export Database", e);
+        if (exportDir.exists() || exportDir.mkdirs()) {
+	        File file = new File(exportDir, "export.db");
+	
+	        try {
+	        	file.createNewFile();
+	        	ViewHelper.copyFile(dbFile, file);
+	        } catch (IOException e) {
+				Log.e(ExportDatabaseActivity.class.getName(), "Failed to export Database", e);
+				Toast.makeText(getApplicationContext(), getString(R.string.failedToExport), Toast.LENGTH_SHORT).show();  		
+	        }
+        } else {
+			Log.e(ExportDatabaseActivity.class.getName(), "Failed to export Database, couldn't create directories");
 			Toast.makeText(getApplicationContext(), getString(R.string.failedToExport), Toast.LENGTH_SHORT).show();  		
         }
         
