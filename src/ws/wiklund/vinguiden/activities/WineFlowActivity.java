@@ -153,7 +153,7 @@ public class WineFlowActivity extends BaseActivity implements Notifyable {
 	}
 
 	private boolean hasSomeStats() {
-		return adapter.getCount() > 0;
+		return adapter != null && adapter.getCount() > 0;
 	}
 	
 	private void handleLongClick(final int position) {
